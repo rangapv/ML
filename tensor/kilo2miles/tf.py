@@ -32,5 +32,9 @@ plt.xlabel('Epoch')
 plt.ylabel('Training Loss')
 plt.legend('Training Loss')
 
+#prediction
+kilometers = 100
+predictedMiles = model.predict([kilometers])
+print("The conversion from Kilometres to Miles is as follows: " + str(predictedMiles))
 
 plt.show()
