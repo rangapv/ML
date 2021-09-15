@@ -8,4 +8,19 @@ df.info
 print("Painting the correlations")
 #Once we load seaborn into the session, everytime a matplotlib plot is executed, seaborn's default customizations are added
 sns.scatterplot(df['Kilometres'], df['Miles'])
+print("Define input(X) and output(Y) variables")
+X_train = df['Kilometres']
+y_train = df['Miles']
+
+print("Creating the model")
+model = tf.keras.Sequential()
+model.add(tf.keras.layers.Dense(units=1, input_shape=[1]))
+
+print("Compiling the model")
+model.compile(optimizer=tf.keras.optimizers.Adam(1), loss='mean_squared_error')
+
+print ("Training the model")
+epochs_hist = model.fit(X_train, y_train, epochs = 250)
+
+
 plt.show()
