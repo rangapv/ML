@@ -35,6 +35,5 @@ plt.legend('Training Loss')
 #prediction
 kilometers = 100
 predictedMiles = model.predict([kilometers])
-print("The conversion from Kilometres ( { kilometers } ) to Miles is as follows: ( { predictedMiles } ))
-
+print(f"The conversion from Kilometres ( { kilometers } ) to Miles is as follows: ( { predictedMiles } )") 
 plt.show()
