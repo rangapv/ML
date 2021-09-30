@@ -115,7 +115,24 @@ class Example:
         print("shape of yy:{}\n".format(yy.shape))
 
 
-    def func8(self):
+
+    def func71(self):
+        R = np.linspace(1,5,10)
+
+        THETA = np.linspace(0, np.pi, 45)
+
+        radii, thetas = np.meshgrid(R,THETA)
+
+        print("R:{}".format(R.shape))
+
+        print("THETA:{}".format(THETA.shape))
+
+        print("meshgrid radii:{}".format(radii.shape))
+
+        print("mehgrid thetas:{}".format(thetas.shape))
+        return radii,thetas
+
+    def func8(self,radii,thetas):
         #meshgrid with pyplot
 
 
@@ -126,9 +143,32 @@ class Example:
         plt.show()   
 
 
-#    def func9(self):
-#    def func10(self):
-#    def func11(self):
+    def func9(self):
+        xx, yy = np.meshgrid(a.ravel(),b.ravel()) #passing flattened arrays
+ 
+        print("xx:\n{}".format(xx))
+ 
+        print("shape of xx:{}\n".format(xx.shape))
+ 
+        print("yy:\n{}".format(yy))
+ 
+        print("shape of yy:{}\n".format(yy.shape))
+        
+        
+        
+    def func10(self):
+        X = np.linspace(1,4,4)
+ 
+        Y = np.linspace(6,8, 3)
+ 
+        Z = np.linspace(12,15,4)
+ 
+        xx, yy, zz = np.meshgrid(X,Y,Z)
+ 
+        print(xx.shape, yy.shape, zz.shape) 
+        
+        
+        #    def func11(self):
 #    def func12(self):
 #    def func13(self):
 #    def func14(self):
@@ -151,4 +191,5 @@ if __name__== '__main__':
    # v1 = v.func5()
    # v1 = v.func6()
     v1 = v.func7()
-   # v1 = v.func8()
+    r,t = v.func71()
+    v1 = v.func8(r,t)
