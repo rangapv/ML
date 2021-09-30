@@ -113,7 +113,7 @@ class Example:
         print("yy:\n{}".format(yy))
 
         print("shape of yy:{}\n".format(yy.shape))
-
+        return a,b
 
 
     def func71(self):
@@ -143,7 +143,7 @@ class Example:
         plt.show()   
 
 
-    def func9(self):
+    def func9(self,a,b):
         xx, yy = np.meshgrid(a.ravel(),b.ravel()) #passing flattened arrays
  
         print("xx:\n{}".format(xx))
@@ -168,12 +168,78 @@ class Example:
         print(xx.shape, yy.shape, zz.shape) 
         
         
-        #    def func11(self):
-#    def func12(self):
-#    def func13(self):
-#    def func14(self):
-#    def func15(self):
-#    def func16(self):
+    def func11(self):
+        #metrix indexing
+        i = np.array([1,2,3,4,5]) #rows
+
+        j = np.array([11, 12, 13, 14, 15]) #columns
+
+        ii, jj = np.meshgrid(i,j, indexing='ij')
+
+        print("row indices:\n{}\n".format(ii))
+
+        print("column indices:\n{}".format(jj))
+         
+         
+         
+         
+         
+    def func12(self):
+        #3-dimensional meshgrid
+        X = np.linspace(1,4,4)
+ 
+        Y = np.linspace(6,8, 3)
+ 
+        Z = np.linspace(12,15,4)
+ 
+        xx, yy, zz = np.meshgrid(X,Y,Z)
+ 
+        print(xx.shape, yy.shape, zz.shape)
+         
+        return xx,yy,zz 
+         
+         
+    def func13(self,xx,yy,zz):
+        #visulaize 3d
+        fig = plt.figure()
+ 
+        ax = fig.add_subplot(111, projection='3d')
+ 
+        ax.scatter(xx, yy, zz)
+ 
+        ax.set_zlim(12, 15)
+ 
+        plt.show()        
+         
+         
+         
+    def func14(self,xx,yy):
+        #3D surface plot using Numpy
+        X = np.linspace(-20,20,100)
+ 
+        Y = np.linspace(-20,20,100)
+ 
+        X, Y = np.meshgrid(X,Y)
+ 
+        Z = 4*xx**2 + yy**2
+ 
+        fig = plt.figure()
+ 
+        ax = fig.add_subplot(111, projection='3d')
+ 
+        ax.plot_surface(X, Y, Z, cmap="plasma", linewidth=0, antialiased=False, alpha=0.5)
+ 
+        plt.show()        
+         
+         
+    def func15(self):
+        X = np.random.randn(100000)
+ 
+        Y = np.random.randn(100000)
+ 
+        xx,yy =  np.meshgrid(X,Y)        
+         
+         
 #    def func17(self):
 #    def func18(self):
 #    def func19(self):
@@ -190,6 +256,11 @@ if __name__== '__main__':
     v1 = v.func4()
    # v1 = v.func5()
    # v1 = v.func6()
-    v1 = v.func7()
+    a,b = v.func7()
     r,t = v.func71()
     v1 = v.func8(r,t)
+    v1 = v.func9(a.b)
+    xx,yy,zz = v.func12()
+    v1 = v.func13(xx,yy,zz)
+    v1 = v.func14(xx,yy)
+    v1 = v.func15()
