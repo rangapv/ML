@@ -38,9 +38,9 @@ os.makedirs(output_folder)
 #  shutil.move(image_name, os.path.join(input_folder, image_name))
 
 
-app = 'python -m ./MODNet/demo/image_matting/colab/inference --input-path ,/input --output-path ./output --ckpt-path ./pretrained/modnet_photographic_portrait_matting.ckpt'
-pt = subprocess.run(app, capture_output=True, shell=True, text=True, check=False)
-l23 = pt.stdout
-print(pt)
-print(l23)
+#app = 'python -m ./MODNet/demo/image_matting/colab/inference --input-path ,/input --output-path ./output --ckpt-path ./pretrained/modnet_photographic_portrait_matting.ckpt'
+#pt = subprocess.run(app, capture_output=True, shell=True, text=True, check=False)
+#l23 = pt.stdout
+#print(pt)
+#print(l23)
 
