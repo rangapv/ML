@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #This is the logistic regression using PyTorch for Bianry Classification
 import torch as T
 import numpy as np
