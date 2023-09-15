@@ -1,6 +1,7 @@
 #!/bin/bash
 set -E
 source <(curl -s https://raw.githubusercontent.com/rangapv/ansible-install/main/pyverchk.sh) >/dev/null 2>&1
+#source "../ans/pyverchk.sh"
 
 depflag1=0
 
@@ -42,9 +43,10 @@ fi
 
 #Main Begins
 
-pythoncurrent
-if [[ (( $pyvs -ne 0 )) ]]
+pythonwc
+if [[ ( "$pyvs" !=  "0" ) ]]
 then
+   echo "inside pyvs"
    pyins
    pipins
 fi
