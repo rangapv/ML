@@ -6,7 +6,7 @@
 
 
 source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) > /dev/null 2>&1
-
+source <(curl -s https://raw.githubusercontent.com/rangapv/ansible-install/refs/heads/main/libraries.sh) > /dev/null 2>&1
 
 chkifinsta() {
 
@@ -44,8 +44,8 @@ fi
 
 cuda_toolkit() {
 
-#$una=x86_64
-#$ki=ubuntu
+#una=x86_64
+#ki=ubuntu
 #cmd1=apt-get
 
 irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
@@ -68,14 +68,68 @@ lnxdr=`uname -v | awk '{split($0,a," "); print a[1]}'`
 
 }
 
+nvidia_version() {
+
+nv1=`nvcc --version`
+
+cuda_ver=``
+tensorRT-ver=``
+
+}
+
+cuda_cuDNN() {
+
+#pre-requistise install zlib getting it from my repo ansible-install source above ...calling the install here
+
+zlibadd
+
+
+#if you have installed the CUDA tool-kit form this program then you would have had the key-ring & other packages installed
+cudnnv="12"
+cuDNN=`sudo ${cmd1} -y install cudnn-cuda-${cudnnv}`
+
+
+}
 
 tensorrt_install() {
-
 
 version="10.x.x.x"
 arch=$(uname -m)
 cuda="cuda-x.x"
 #tar -xzvf TensorRT-${version}.Linux.${arch}-gnu.${cuda}.tar.gz
+
+#os="ubuntuxx04"
+os="${ki}${irelease}"
+#tag="10.x.x-cuda-x.x"
+
+
+#tensorRTv="10.x.x"
+#cudaVer="cuda-x.x"
+
+tag="${tensorRTv}-${cudaVer}"
+
+tnsrt1=`sudo dpkg -i nv-tensorrt-local-repo-${os}-${tag}_1.0-1_amd64.deb`
+tnsrt2=`sudo cp /var/nv-tensorrt-local-repo-${os}-${tag}/*-keyring.gpg /usr/share/keyrings/`
+tnsrt3=`sudo apt-get update`
+
+tnsrt4=`sudo apt-get install tensorrt`
+
+verify1=`dpkg-query -W tensorrt`
+verify1s="$?"
+
+if [ $verify1s == "0" ]
+then
+	echo "TensorRT install successful"
+	echo "The installed version is $verify1"
+else
+	echo "The install of tensorRT failed"
+	echo "$verofy1"
+fi
+
+
+}
+
+alternate-installtensorRT() {
 Download:
 `tar -xzvf TensorRT-${version}.Linux.${una}-gnu.${cuda}.tar.gz`
 export LD_LIBRARY_PATH=<TensorRT-${version}/lib>:$LD_LIBRARY_PATH
@@ -83,7 +137,6 @@ export LD_LIBRARY_PATH=<TensorRT-${version}/lib>:$LD_LIBRARY_PATH
 cd TensorRT-${version}/python
 
 python3 -m pip install tensorrt-*-cp3x-none-linux_x86_64.whl
-
 
 }
 #checking to see if python and pip are installed before installing cuda for python
