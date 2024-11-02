@@ -77,16 +77,115 @@ tensorRT-ver=``
 
 }
 
+versioncheck() {
+
+     pkg="$@"	
+     pyv=`which $pkg`
+     pyvs="$?"
+     if [[ ( $pyvs -ne 0 ) ]]
+     then
+            echo "No $pkg Found; GREENFIELD Installs proceeding"
+     else
+        vercheck $pkg 
+        if [[ ( $piver1 = $cmd1 ) ]]
+        then
+                echo "Requirement satisfied Python is already in version \"${piver1}\" "
+                exit
+        elif [[ ( $piver1 < $cmd1 ) ]]
+        then
+                echo "Upgrading Python to $cmd1"
+
+        elif [[ ( $piver1 > $cmd1 ) ]]
+        then
+                echo "The current version of Python ${piver1} is Higher than the request $cmd1 ;exiting"
+                exit
+        fi
+     fi
+}
+
+
+
+vercheck() {
+
+vrchk1="$@"
+vrchk2=`${vrchk1} -c "import zlib ; print(zlib.ZLIB_RUNTIME_VERSION)"`
+vrarg1=`echo ${vrchk2} | awk '{split($0,a,"."); print a}'`
+newver="1.3.1"
+
+vrarg3=($(echo ${vrchk2} | awk '{len=split($0,a,"."); for (n=0;n<=len;n++) print a[n]}'))
+vrang4=($(echo ${newver} | awk '{len=split($0,a,"."); for (n=0;n<=len;n++) print a[n]}'))
+lvrarg3=${#vrarg3[@]}
+lvrarg4=${#vrarg4[@]}
+
+if [ $newver == $vrchk2 ]
+then
+	echo "No upgrade required"
+	echo "The requested version $newver and the current version $vrchk2 are the SAME"
+	break
+else
+
+ if [ "$lvrarg3" >= "$lvrarg4" ]
+ then
+ for (n=0;n<=$lvararg3;n++)
+ do
+    if ( ${vrarg4[n]} < ${vrarg3[n]} ) 
+    then
+        echo "Upgrade required "
+        upgradeflag="1"
+        #break	
+    fi
+
+ done
+
+ fi
+
+ if [ "$lvrarg3" < "$lvrarg4" ]
+ then
+ for (n=0;n<=$lvararg4;n++)
+ do
+    if ( ${vrarg4[n]} > ${vrarg3[n]} )
+    then
+        echo "Upgrade required "
+        upgradeflag="1"
+        #break
+    fi
+ done
+
+ fi
+  
+  if [ $upgradeflag -ne 1 ]
+  then
+	  echo "Upgrading package"
+	  zlibadd
+  fi
+
+fi
+}
+
 cuda_cuDNN() {
 
 #pre-requistise install zlib getting it from my repo ansible-install source above ...calling the install here
 
-zlibadd
+zadd1=`python3 -c "import zlib ; print(zlib.ZLIB_RUNTIME_VERSION)"`
+zadd1s="$?"
+zlibv="1.3.1"
 
+if [ "$zadd1s" -ne "0" ]
+then
+	echo "zlib is not installed"
+	zlibadd
+else
+
+     if [ $zlibv 
+
+
+
+	echo "zlib already in the current version hence proceeding with the setup.."
+fi
 
 #if you have installed the CUDA tool-kit form this program then you would have had the key-ring & other packages installed
 cudnnv="12"
-cuDNN=`sudo ${cmd1} -y install cudnn-cuda-${cudnnv}`
+cuDNN=`sudo $cmd1 -y install cudnn-cuda-${cudnnv}`
 
 
 }
@@ -110,9 +209,9 @@ tag="${tensorRTv}-${cudaVer}"
 
 tnsrt1=`sudo dpkg -i nv-tensorrt-local-repo-${os}-${tag}_1.0-1_amd64.deb`
 tnsrt2=`sudo cp /var/nv-tensorrt-local-repo-${os}-${tag}/*-keyring.gpg /usr/share/keyrings/`
-tnsrt3=`sudo apt-get update`
+tnsrt3=`sudo $cmd1 update`
 
-tnsrt4=`sudo apt-get install tensorrt`
+tnsrt4=`sudo $cmd1 install tensorrt`
 
 verify1=`dpkg-query -W tensorrt`
 verify1s="$?"
