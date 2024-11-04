@@ -84,13 +84,30 @@ cuda_cuDNN() {
 
 vercheck 1.3.1 "python3 -c \"import zlib;print(zlib.ZLIB_RUNTIME_VERSION)\"" zlibadd
 
-
 #if you have installed the CUDA tool-kit form this program then you would have had the key-ring & other packages installed
-cudnnv="12"
-cuDNN=`sudo $cmd1 -y install cudnn-cuda-${cudnnv}`
+#cudnnv="12"
+#cuDNN=`sudo $cmd1 -y install cudnn-cuda-${cudnnv}`
+
+cudnn_version="8.9.7"
+cuda_version="cuda12.2"
+
+sudo $cmd1 install libcudnn8=${cudnn_version}-1+${cuda_version}
+sudo $cmd1 install libcudnn8-dev=${cudnn_version}-1+${cuda_version}
+sudo $cmd1 install libcudnn8-samples=${cudnn_version}-1+${cuda_version}
 
 
 }
+
+verify_cuDNN() {
+
+vrcdnn1=`cp -r /usr/src/cudnn_samples_v8/ $HOME`
+vrcdnn2=`cd $HOME/cudnn_samples_v8/mnistCUDNN;make clean && make`
+vrcdnn3=`cd $HOME/cudnn_samples_v8/mnistCUDNN;./mnistCUDNN`
+echo "the test result is $vrcdnn3"
+
+}
+
+
 
 tensorrt_install() {
 
@@ -142,5 +159,20 @@ python3 -m pip install tensorrt-*-cp3x-none-linux_x86_64.whl
 }
 #checking to see if python and pip are installed before installing cuda for python
 
+
+
+install(){
+
+
 chkifinsta python3 pip3
+
+cuda_toolkit
+
+cuda_cuDNN
+
+verify_cuDNN
+
+
+}
+
 
