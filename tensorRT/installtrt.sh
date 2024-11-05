@@ -8,6 +8,21 @@ source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.s
 source <(curl -s https://raw.githubusercontent.com/rangapv/ansible-install/refs/heads/main/libraries.sh) > /dev/null 2>&1
 source <(curl -s https://raw.githubusercontent.com/rangapv/QuikFix/refs/heads/master/ver.sh) > /dev/null 2>&1
 
+
+requirement() {
+
+i1=`lspci | grep -i nvidia`
+i1s="$?"
+
+if [ "$i1s" == "1" ]
+then
+	echo "This system is not nvidia compatible"
+	exit
+fi
+
+}
+
+
 chkifinsta() {
 
 cmd1=("$@")
@@ -66,6 +81,12 @@ echo "hello"
 
 lnxdr=`uname -v | awk '{split($0,a," "); print a[1]}'`
 
+pypip="pip3"
+
+#install
+cupy1=`${pypip} install cuda-python`
+cupy1s="$?"
+
 }
 
 nvidia_version() {
@@ -95,7 +116,6 @@ sudo $cmd1 install libcudnn8=${cudnn_version}-1+${cuda_version}
 sudo $cmd1 install libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 sudo $cmd1 install libcudnn8-samples=${cudnn_version}-1+${cuda_version}
 
-
 }
 
 verify_cuDNN() {
@@ -107,22 +127,47 @@ echo "the test result is $vrcdnn3"
 
 }
 
-
-
 tensorrt_install() {
 
-version="10.x.x.x"
-arch=$(uname -m)
-cuda="cuda-x.x"
-#tar -xzvf TensorRT-${version}.Linux.${arch}-gnu.${cuda}.tar.gz
+# Download the tensorRT https://developer.nvidia.com/tensorrt
+# https://developer.nvidia.com/tensorrt/download/10x
+
+#una=x86_64
+#ki=ubuntu
+#cmd1=apt-get
 
 #os="ubuntuxx04"
 os="${ki}${irelease}"
 #tag="10.x.x-cuda-x.x"
 
 
-#tensorRTv="10.x.x"
-#cudaVer="cuda-x.x"
+irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
+
+version="10.x.x.x"
+arch=$(uname -m)
+version="10.6.0.26"
+cuda="cuda-12.2"
+
+#tar -xzvf TensorRT-${version}.Linux.${arch}-gnu.${cuda}.tar.gz
+
+step1=`tar -xzvf TensorRT-${version}.Linux.${una}-gnu.${cuda}.tar.gz`
+
+step2=`export LD_LIBRARY_PATH=<TensorRT-${version}/lib>:$LD_LIBRARY_PATH`
+
+step3=`cd TensorRT-${version}/python`
+
+step4=`python3 -m pip3 install tensorrt-*-cp3x-none-linux_x86_64.whl`
+
+step51=`python3 -m pip3 install tensorrt_lean-*-cp3x-none-linux_x86_64.whl`
+
+step52=`python3 -m pip3 install tensorrt_dispatch-*-cp3x-none-linux_x86_64.whl`
+
+}
+
+first-alternate-installtensorRT() {
+
+#trti1=`wget https://developer.download.nvidia.com/compute/cuda/repos/${ki}${irelease}/${una}/cuda-keyring_1.1-1_all.deb`
+#trti2=`sudo dpkg -i cuda-keyring_1.1-1_all.deb`
 
 tag="${tensorRTv}-${cudaVer}"
 
@@ -144,27 +189,36 @@ else
 	echo "$verofy1"
 fi
 
-
 }
 
-alternate-installtensorRT() {
-Download:
-`tar -xzvf TensorRT-${version}.Linux.${una}-gnu.${cuda}.tar.gz`
-export LD_LIBRARY_PATH=<TensorRT-${version}/lib>:$LD_LIBRARY_PATH
+second-alternate-installtensorRT() {
 
-cd TensorRT-${version}/python
+tag="${tensorRTv}-${cudaVer}"
 
-python3 -m pip install tensorrt-*-cp3x-none-linux_x86_64.whl
+tnsrt1=`sudo dpkg -i nv-tensorrt-local-repo-${os}-${tag}_1.0-1_amd64.deb`
+tnsrt2=`sudo cp /var/nv-tensorrt-local-repo-${os}-${tag}/*-keyring.gpg /usr/share/keyrings/`
+tnsrt3=`sudo $cmd1 update`
+
+tnsrt4=`sudo $cmd1 install tensorrt`
+
+verify1=`dpkg-query -W tensorrt`
+verify1s="$?"
+
+if [ $verify1s == "0" ]
+then
+        echo "TensorRT install successful"
+        echo "The installed version is $verify1"
+else
+        echo "The install of tensorRT failed"
+        echo "$verofy1"
+fi
 
 }
 #checking to see if python and pip are installed before installing cuda for python
 
-
-
 install(){
 
-
-chkifinsta python3 pip3
+chkifinsta python3 pip3 gcc
 
 cuda_toolkit
 
@@ -172,7 +226,5 @@ cuda_cuDNN
 
 verify_cuDNN
 
-
 }
-
 
