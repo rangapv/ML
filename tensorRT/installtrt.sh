@@ -145,8 +145,15 @@ irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");prin
 
 version="10.x.x.x"
 arch=$(uname -m)
-version="10.6.0.26"
+#version="10.6.0.26"
 cuda="cuda-12.2"
+
+tensort_ins1="TensorRT-10.6.0.26.Linux.x86_64-gnu.cuda-11.8.tar.gz"
+version=`echo "${tensort_ins1}" | awk '{split($0,a,"-");print a[2]}'| grep -Eo '^[0-9.]*' | sed 's/.$//'`
+
+tensort_ins2=`echo "${tensort_ins1}" | grep -o "cuda-.*"`
+tensort_ins3=${tensort_ins2:0:-7}
+cuda="${tensort_ins3}"
 
 #tar -xzvf TensorRT-${version}.Linux.${arch}-gnu.${cuda}.tar.gz
 
