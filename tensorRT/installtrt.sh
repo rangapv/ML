@@ -140,7 +140,6 @@ tensorrt_install() {
 os="${ki}${irelease}"
 #tag="10.x.x-cuda-x.x"
 
-
 irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
 
 version="10.x.x.x"
@@ -171,6 +170,22 @@ step52=`python3 -m pip3 install tensorrt_dispatch-*-cp3x-none-linux_x86_64.whl`
 
 }
 
+verify_tensorRT() {
+
+verify1=`dpkg-query -W tensorrt`
+verify1s="$?"
+
+if [ $verify1s == "0" ]
+then
+	echo "TensorRT install successful"
+	echo "The installed version is $verify1"
+else
+	echo "The install of tensorRT failed"
+	echo "$verify1"
+fi
+
+}
+
 first-alternate-installtensorRT() {
 
 #trti1=`wget https://developer.download.nvidia.com/compute/cuda/repos/${ki}${irelease}/${una}/cuda-keyring_1.1-1_all.deb`
@@ -184,43 +199,8 @@ tnsrt3=`sudo $cmd1 update`
 
 tnsrt4=`sudo $cmd1 install tensorrt`
 
-verify1=`dpkg-query -W tensorrt`
-verify1s="$?"
-
-if [ $verify1s == "0" ]
-then
-	echo "TensorRT install successful"
-	echo "The installed version is $verify1"
-else
-	echo "The install of tensorRT failed"
-	echo "$verofy1"
-fi
-
 }
 
-second-alternate-installtensorRT() {
-
-tag="${tensorRTv}-${cudaVer}"
-
-tnsrt1=`sudo dpkg -i nv-tensorrt-local-repo-${os}-${tag}_1.0-1_amd64.deb`
-tnsrt2=`sudo cp /var/nv-tensorrt-local-repo-${os}-${tag}/*-keyring.gpg /usr/share/keyrings/`
-tnsrt3=`sudo $cmd1 update`
-
-tnsrt4=`sudo $cmd1 install tensorrt`
-
-verify1=`dpkg-query -W tensorrt`
-verify1s="$?"
-
-if [ $verify1s == "0" ]
-then
-        echo "TensorRT install successful"
-        echo "The installed version is $verify1"
-else
-        echo "The install of tensorRT failed"
-        echo "$verofy1"
-fi
-
-}
 #checking to see if python and pip are installed before installing cuda for python
 
 install(){
@@ -232,6 +212,8 @@ cuda_toolkit
 cuda_cuDNN
 
 verify_cuDNN
+
+verify_tensorRT
 
 }
 
