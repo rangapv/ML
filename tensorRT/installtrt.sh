@@ -201,6 +201,57 @@ tnsrt4=`sudo $cmd1 install tensorrt`
 
 }
 
+
+onnx_install() {
+
+whonnx="$@"
+
+if [ -z  "$@" ]
+then
+
+     onx_cpu=`pip3 install onnxruntime`
+
+elif [ "$@" == "gpu" ]
+then
+     onx_gpu1=`pip3 install onnxruntime-gpu`
+
+elif [ "$@" == "qnn" ]
+then
+
+     onx_qnn=`pip3 install onnxruntime-qnn`
+
+else
+	echo "No-compatible option to install ONNX runtime"
+fi
+
+torch_onnx=`python3 -c "import torch;print (torch.__version__)"`
+tor_onxs="$?"
+
+if [ "$tor_onxs" != "0" ]
+then
+  instor_onnx=`pip3 install torch`
+fi
+
+tflow_onnx=`python3 -c "import tf2onnx;print (tf2onnx.__version__)"`
+tflow_onxs="$?"
+
+if [ "$tflow_onxs" != "0" ]
+then
+  instflo_onnx=`pip3 install tf2onnx`
+fi
+
+skl2onnx_onnx=`python3 -c "import skl2onnx;print (skl2onnx.__version__)"`
+skl2onnx_onxs="$?"
+
+if [ "$skl2onnx_onxs" != "0" ]
+then
+  insskl_onnx=`pip3 install skl2onnx`
+fi
+
+}
+
+
+
 #checking to see if python and pip are installed before installing cuda for python
 
 install(){
@@ -214,6 +265,8 @@ cuda_cuDNN
 verify_cuDNN
 
 verify_tensorRT
+
+onnx_install gpu
 
 }
 
