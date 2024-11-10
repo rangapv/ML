@@ -5,7 +5,7 @@
 #set -e
 
 source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) > /dev/null 2>&1
-source <(curl -s https://raw.githubusercontent.com/rangapv/ansible-install/refs/heads/main/libraries.sh) > /dev/null 2>&1
+#source <(curl -s https://raw.githubusercontent.com/rangapv/ansible-install/refs/heads/main/libraries.sh) > /dev/null 2>&1
 source <(curl -s https://raw.githubusercontent.com/rangapv/QuikFix/refs/heads/master/ver.sh) > /dev/null 2>&1
 
 
