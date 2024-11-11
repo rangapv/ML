@@ -68,7 +68,7 @@ echo "the total pip packages to check is $cln"
 
 for i in "${cl[@]}"
 do
-wc=`$pipv list $i`
+wc=`$pipv show $i`
 wcs="$?"
 
 if [[ ( $wcs != "0" ) ]]
