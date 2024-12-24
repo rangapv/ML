@@ -18,6 +18,8 @@ if [ "$i1s" == "1" ]
 then
 	echo "This system is not nvidia compatible"
 	exit
+else
+	echo "This system is compatible ${i1}"
 fi
 
 }
@@ -115,11 +117,23 @@ cupy1s="$?"
 }
 
 nvidia_version() {
-
-nv1=`nvcc --version`
-
-cuda_ver=``
-tensorRT-ver=``
+nv1=`/usr/local/cuda/bin/nvcc --version`
+nv1s=$?
+#echo "nv1 is $nv1 and nv1s is $nvi1"
+if (( "$nv1s" == "0" ))
+then
+nvc1=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[1]}'`
+nvc2=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[2]}'`
+nvc3=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[3]}'`
+#nvc1=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[1]}'`
+cuda_release=`echo "The $nvc1 is $nvc2"`
+cuda_ver=`echo "The $nvc1 is version $nvc3"`
+echo "$cuda_release"
+echo "$cuda_ver"
+#tensorRT-ver=``
+else
+	echo "looks-like nvidia-toolkit is not installed"
+fi
 
 }
 
@@ -293,3 +307,14 @@ onnx_install gpu
 
 }
 
+#Testing functions...
+#requirement
+
+#chkifinsta python3 pip3 gcc
+
+#cuda_toolkit
+
+#nvidia_version
+#
+#
+cuda_cuDNN
