@@ -188,7 +188,7 @@ f2c=`sudo dpkg -i cudnn-local-repo-$distro-${cdnv}_1.0-1_$architecture.deb`
 f3c=`sudo cp /var/cudnn-local-*/cudnn-*-keyring.gpg /usr/share/keyrings/`
 f4c=`sudo apt-get update`
 f5c=`sudo apt-get -y install cudnn9-cuda-12`
-
+f6c=`sudo apt-get -y install libcudnn9-samples`
 }
 
 
