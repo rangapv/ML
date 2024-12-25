@@ -90,7 +90,7 @@ cuda_toolkit() {
 #ki=ubuntu
 #cmd1=apt-get
 
-irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
+#irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
 
 ctk1=`wget https://developer.download.nvidia.com/compute/cuda/repos/${ki}${irelease}/${una}/cuda-${ki}${irelease}.pin`
 ctk2=`sudo mv cuda-${ki}${irelease}.pin /etc/apt/preferences.d/cuda-repository-pin-600`
@@ -124,15 +124,19 @@ if (( "$nv1s" == "0" ))
 then
 nvc1=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[1]}'`
 nvc2=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[2]}'`
+nvc21=`echo "$nvc2" |grep release | awk '{split($0,a," "); print a[2]}'`
+nvc22=`echo "$nvc21" |awk '{split($0,a,"."); print a[1]}'`
 nvc3=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[3]}'`
 #nvc1=`echo "$nv1" |grep release | awk '{split($0,a,","); print a[1]}'`
 cuda_release=`echo "The $nvc1 is $nvc2"`
 cuda_ver=`echo "The $nvc1 is version $nvc3"`
 echo "$cuda_release"
 echo "$cuda_ver"
+echo "the cuda main relase is $nvc22"
 #tensorRT-ver=``
 else
 	echo "looks-like nvidia-toolkit is not installed"
+	exit
 fi
 
 }
@@ -140,28 +144,59 @@ fi
 
 cuda_cuDNN() {
 
+#irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
 #pre-requistise install zlib getting it from my repo ansible-install source above ...calling the install here
 
 vercheck 1.3.1 "python3 -c \"import zlib;print(zlib.ZLIB_RUNTIME_VERSION)\"" zlibadd
 
+#wget https://developer.download.nvidia.com/compute/cuda/repos/<distro>/<arch>/cuda-keyring_1.1-1_all.deb
+#sudo dpkg -i cuda-keyring_1.1-1_all.deb
+cudkey1=`wget https://developer.download.nvidia.com/compute/cuda/repos/${ki}${irelease}/${una}/cuda-keyring_1.1-1_all.deb`
+cudkey2=`sudo dpkg -i cuda-keyring_1.1-1_all.deb`
+update1=`sudo apt-get update`
+#update2=`sudo cp /var/cudnn-local-*/cudnn-*-keyring.gpg /usr/share/keyrings/`
+
+#sudo apt-get -y install cudnn9-cuda-12
 #if you have installed the CUDA tool-kit form this program then you would have had the key-ring & other packages installed
 #cudnnv="12"
-#cuDNN=`sudo $cmd1 -y install cudnn-cuda-${cudnnv}`
+#get the cuda-tookkit Installed version
+#
+#
+#
+nvidia_version
+cuDNN=`sudo $cmd1 install cudnn9-cuda-${nvc22}`
+#cuDNNsamp=`sudo $cmd1 install libcudnn9-samples /usr/local/src`
+#cuDNNdev=`sudo $cmd1 install libcudnn9-dev /usr/local/src`
+cudnn_version="9.6.0"
+cuda_version="cuda${nvc21}"
 
-cudnn_version="8.9.7"
-cuda_version="cuda12.2"
-
-sudo $cmd1 install libcudnn8=${cudnn_version}-1+${cuda_version}
-sudo $cmd1 install libcudnn8-dev=${cudnn_version}-1+${cuda_version}
-sudo $cmd1 install libcudnn8-samples=${cudnn_version}-1+${cuda_version}
+#TO-PIN it to a particular verison uncomment the following
+#sudo $cmd1 install libcudnn9=${cudnn_version}-1+${cuda_version}
+#sudo $cmd1 install libcudnn9-dev=${cudnn_version}-1+${cuda_version}
+#sudo $cmd1 install libcudnn9-samples=${cudnn_version}-1+${cuda_version}
 
 }
 
+
+firstalternative_cuDNN(){
+
+distro="${ki}${irelease}"
+architecture="amd64"
+cdnv="9.6.0"
+f1c=`wget https://developer.download.nvidia.com/compute/cudnn/$cdnv/local_installers/cudnn-local-repo-$distro-${cdnv}_1.0-1_$architecture.deb`
+f2c=`sudo dpkg -i cudnn-local-repo-$distro-${cdnv}_1.0-1_$architecture.deb`
+f3c=`sudo cp /var/cudnn-local-*/cudnn-*-keyring.gpg /usr/share/keyrings/`
+f4c=`sudo apt-get update`
+f5c=`sudo apt-get -y install cudnn9-cuda-12`
+
+}
+
+
 verify_cuDNN() {
 
-vrcdnn1=`cp -r /usr/src/cudnn_samples_v8/ $HOME`
-vrcdnn2=`cd $HOME/cudnn_samples_v8/mnistCUDNN;make clean && make`
-vrcdnn3=`cd $HOME/cudnn_samples_v8/mnistCUDNN;./mnistCUDNN`
+vrcdnn1=`cp -r /usr/src/cudnn_samples_v9/ $HOME`
+vrcdnn2=`cd $HOME/cudnn_samples_v9/mnistCUDNN;make clean && make`
+vrcdnn3=`cd $HOME/cudnn_samples_v9/mnistCUDNN;./mnistCUDNN`
 echo "the test result is $vrcdnn3"
 
 }
@@ -179,7 +214,7 @@ tensorrt_install() {
 os="${ki}${irelease}"
 #tag="10.x.x-cuda-x.x"
 
-irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
+#irelease=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"=");print a[2]}' |  awk '{split($0,a,".");print a[1]a[2]}'`
 
 version="10.x.x.x"
 arch=$(uname -m)
@@ -316,5 +351,7 @@ onnx_install gpu
 
 #nvidia_version
 #
-#
-cuda_cuDNN
+#cuda_python
+#cuda_cuDNN
+#firstalternative_cuDNN
+verify_cuDNN
