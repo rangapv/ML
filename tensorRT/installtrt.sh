@@ -352,6 +352,6 @@ onnx_install gpu
 #nvidia_version
 #
 #cuda_python
-cuda_cuDNN
+#cuda_cuDNN
 #firstalternative_cuDNN
-#verify_cuDNN
+verify_cuDNN
