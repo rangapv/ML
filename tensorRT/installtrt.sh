@@ -102,6 +102,19 @@ ctk7=`sudo $cmd1 -y install cuda-toolkit-12-6`
 
 }
 
+
+
+cuda_toolkit_1104ubuntu2004(){
+cd1=`wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin`
+cd2=`sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600`
+cd3=`sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub`
+cd4=`sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"`
+cd5=`sudo apt-get update`
+cd6=`sudo apt-get -y install cuda`
+
+}
+
+
 cuda_python(){
 
 echo "hello"
@@ -354,4 +367,5 @@ onnx_install gpu
 #cuda_python
 #cuda_cuDNN
 #firstalternative_cuDNN
-verify_cuDNN
+#verify_cuDNN
+cuda_toolkit_1104ubuntu2004
