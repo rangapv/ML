@@ -35,7 +35,7 @@ output_names = [n.name for n in model_proto.graph.output]
 
 #print(output_names)
 
-providers = ['CUDAExecutionProvider','CPUExecutionProvider']
+providers = ['CUDAExecutionProvider']
 m = rt.InferenceSession(output_path, providers=providers)
 onnx_pred = m.run(output_names, {"input": x})
 
