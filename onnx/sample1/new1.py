@@ -57,3 +57,7 @@ print(f'tensor predicted is {y}')
 
 np.testing.assert_allclose(y1, onnx_pred[0], rtol=1e-0)
 
+#now the tensoRT inference Part
+
+
+
