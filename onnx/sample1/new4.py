@@ -4,7 +4,7 @@
 
 import tensorflow as tf
 import tensorrt as trt
-
+import ctypes
 #import cuda.cuda as cuda
 import pycuda.driver as cuda
 from cuda import cuda, cudart
@@ -143,7 +143,13 @@ for binding in tensor_names:
     print(f't2 is {t2}')
     nbytes = size * t2 
     host_mem = cudart.cudaMallocHost(nbytes)
-    #pointer_type = ctypes.POINTER(np.ctypeslib.as_ctypes_type(dtype))
+    print(f'host memory is {host_mem}')
+    pointer_type = ctypes.POINTER(np.ctypeslib.as_ctypes_type(dtype))
+    print(f'pointer is {pointer_type}')
+    h1 = np.ctypeslib.as_array(ctypes.cast(host_mem, pointer_type), (size,))
+
+
+
     device_mem = cudart.cudaMalloc(nbytes)
     print(f'hostmem is {host_mem}')
     print(f'devicemem is {device_mem}')
@@ -151,16 +157,17 @@ for binding in tensor_names:
 
     bindings.append(int(device_mem[1]))
     if e1.get_tensor_mode(binding) == trt.TensorIOMode.INPUT:
-        inputs.append({"host": host_mem, "device": device_mem, "nbytes": int(nbytes)})
+        inputs.append({"host": h1, "device": device_mem, "nbytes": nbytes})
     else:
-        outputs.append({"host": host_mem, "device": device_mem, "nbytes": int(nbytes)})
-
+        outputs.append({"host": h1, "device": device_mem, "nbytes": nbytes})
+print(f'inpit0  {inputs[0]["device"]} {inputs[0]["host"]} {inputs[0]["nbytes"]}')
+print(f'outt0  {outputs[0]["device"]} {outputs[0]["host"]} {outputs[0]["nbytes"]}')
     
 kind = cudart.cudaMemcpyKind.cudaMemcpyHostToDevice
-cudart.cudaMemcpyAsync(inputs[0]["device"], inputs[0]["host"], size,kind, stream)
+result1 = cudart.cudaMemcpyAsync(inputs[0]["device"],inputs[0]["host"],inputs[0]["nbytes"], kind, stream)
     
 cont2 = cont1.execute_async_v3(stream_handle=stream)
-    
+""" 
 kind = cudart.cudaMemcpyKind.cudaMemcpyDeviceToHost
 for out in outputs:
    cudart.cudaMemcpyAsync(out['host'], out['device'], out['nbytes'], kind, stream)
@@ -168,7 +175,7 @@ for out in outputs:
 cudart.cudaStreamSynchronize(stream)
 
 print(f'infer is {outputs[0]}')
-
+"""
 #size = trt.volume(e1.get_binding_shape(binding)) * e1.max_batch_size
 #dtype = trt.nptype(e1.get_binding_dtype(binding))
 
