@@ -136,7 +136,7 @@ class HostDeviceMem:
         self._host = np.ctypeslib.as_array(ctypescast1, (size,))
         #self._host = np.ctypeslib.as_array(ctypes.cast(host_mem, pointer_type), (size,))
         dv1 = cudart.cudaMalloc(nbytes)
-        self._device = (dv1[0])
+        self._device = (dv1[1])
         self._nbytes = nbytes
 
     @property
@@ -181,6 +181,7 @@ inputs = []
 outputs = []
 bindings = []
 stream = cudart.cudaStreamCreate()
+print(f'stream is {stream}')
 
 tensor_names = [e1.get_tensor_name(i) for i in range(e1.num_io_tensors)]
 print(f'tensor name sare {tensor_names}')
@@ -214,6 +215,8 @@ for binding in tensor_names:
     else:
          outputs.append(bindingMemory)
     #return inputs, outputs, bindings, stream
+    print(f'binding memeory is {bindingMemory} for {binding}')
+    print(f'binding  deviceis {bindingMemory.device}for {binding}')
 
 
 """
@@ -225,27 +228,37 @@ for binding in tensor_names:
 """
 #print(f'inpit0  {inputs[0]["device"]} {inputs[0]["host"]} {inputs[0]["nbytes"]}')
 #print(f'outt0  {outputs[0]["device"]} {outputs[0]["host"]} {outputs[0]["nbytes"]}')
-    
+print(f'inputs is {inputs} and outputs is {outputs} and bindigns is {bindings}')
+
+
+num_io = e1.num_io_tensors
+for i in range(num_io):
+    cont1.set_tensor_address(e1.get_tensor_name(i), bindings[i])
+
+print(f'name is {e1.get_tensor_name(i)}')
+print(f'binding is {bindings[i]}')
+add1 = cont1.set_tensor_address(e1.get_tensor_name(i), bindings[i])
+print(f'add1 is {add1}')
+
 kind = cudart.cudaMemcpyKind.cudaMemcpyHostToDevice
 
-result1 = (cudart.cudaMemcpyAsync(inp.device, inp.host, inp.nbytes, kind, stream) for inp in inputs )
-
+inp = inputs[0]
+result1 = cudart.cudaMemcpyAsync(inp.device, inp.host, inp.nbytes, kind, stream[1])
+#result1 = (cudart.cudaMemcpyAsync(inp.device, inp.host, inp.nbytes, kind, stream) for inp in inputs )
+print(f'result1 is {result1[0]}')
 #result1 = cudart.cudaMemcpyAsync(inputs[0]["device"],inputs[0]["host"],inputs[0]["nbytes"], kind, stream)
     
-cont2 = cont1.execute_async_v3(stream_handle=stream)
-""" 
+cont2 = cont1.execute_async_v3(stream_handle=stream[1])
+
+print(f'cont2 is {cont2}')
+out = outputs[0]
 kind = cudart.cudaMemcpyKind.cudaMemcpyDeviceToHost
-for out in outputs:
-   cudart.cudaMemcpyAsync(out['host'], out['device'], out['nbytes'], kind, stream)
+result2 = cudart.cudaMemcpyAsync(out.host, out.device, out.nbytes, kind, stream[1])
+print(f'result2 is {result2[0]}')
     # Synchronize the stream
-cudart.cudaStreamSynchronize(stream)
+sync1 = cudart.cudaStreamSynchronize(stream[1])
+print(f'sync1 is {sync1[0]}')
+print(F'OUT-PUTS IS {outputs[0]}')
+#print(f'outputs or prediction is {outputs[0]['Host']}')
 
-print(f'infer is {outputs[0]}')
-"""
-#size = trt.volume(e1.get_binding_shape(binding)) * e1.max_batch_size
-#dtype = trt.nptype(e1.get_binding_dtype(binding))
 
-#print(f'size is {size}')
-#print(f'dtype is {dtype}')
-
-#[output] = common.do_inference(cont1, stream=stream)
