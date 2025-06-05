@@ -13,6 +13,8 @@ import common
 import numpy as np
 from typing import Optional, List, Union
 
+from PIL import Image
+
 l1 = trt.Logger()
 
 b1 = trt.Builder(l1)
@@ -116,6 +118,21 @@ device_mem = cuda.mem_alloc(host_mem.nbytes)
 print(f'device_mem is {device_mem}')
 
 """
+
+def postprocess(data):
+    num_classes = 21
+    # create a color palette, selecting a color for each class
+    palette = np.array([2 ** 25 - 1, 2 ** 15 - 1, 2 ** 21 - 1])
+    colors = np.array([palette*i%255 for i in range(num_classes)]).astype("uint8")
+    # plot the segmentation predictions for 21 classes in different colors
+    img = Image.fromarray(data.astype('uint8'), mode='P')
+    img.putpalette(colors)
+    return img
+
+
+
+
+
 
 class HostDeviceMem:
     """Pair of host and device memory, where the host memory is wrapped in a numpy array"""
@@ -259,6 +276,20 @@ print(f'result2 is {result2[0]}')
 sync1 = cudart.cudaStreamSynchronize(stream[1])
 print(f'sync1 is {sync1[0]}')
 print(F'OUT-PUTS IS {outputs[0]}')
-#print(f'outputs or prediction is {outputs[0]['Host']}')
+out1 = outputs[0].host
+print(f'outputs or prediction is {outputs[0].host}')
+
+for digit, prob in enumerate(out1):
+    print(f'{digit}: {prob:.6f}')
+pred = np.argmax(out1)
+print(f'Prediction: {pred}')
 
 
+input_file  = "input.ppm"
+output_file = "output.ppm"
+
+
+
+with postprocess(np.reshape(out1, (100, 30))) as img:
+        print("Writing output image to file {}".format(output_file))
+        img.convert('RGB').save(output_file, "PPM")
