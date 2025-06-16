@@ -54,7 +54,8 @@ parser = trt.OnnxParser(n1, l1)
 
 print(f'parser is {parser}')
 
-success = parser.parse_from_file("./onnx1.onnx")
+success = parser.parse_from_file("/usr/src/tensorrt/data/resnet50/ResNet50.onnx")
+#success = parser.parse_from_file("./onnx1.onnx")
 
 print(f'success is {success}')
 
@@ -247,6 +248,20 @@ for binding in tensor_names:
 #print(f'outt0  {outputs[0]["device"]} {outputs[0]["host"]} {outputs[0]["nbytes"]}')
 print(f'inputs is {inputs} and outputs is {outputs} and bindigns is {bindings}')
 
+def postprocess(data):
+    num_classes = 21
+    # create a color palette, selecting a color for each class
+    palette = np.array([2 ** 25 - 1, 2 ** 15 - 1, 2 ** 21 - 1])
+    colors = np.array([palette*i%255 for i in range(num_classes)]).astype("uint8")
+    # plot the segmentation predictions for 21 classes in different colors
+    img = Image.fromarray(data.astype('uint8'), mode='P')
+    img.putpalette(colors)
+    return img
+
+
+"""
+
+"""
 
 num_io = e1.num_io_tensors
 for i in range(num_io):
@@ -279,17 +294,29 @@ print(F'OUT-PUTS IS {outputs[0]}')
 out1 = outputs[0].host
 print(f'outputs or prediction is {outputs[0].host}')
 
-for digit, prob in enumerate(out1):
-    print(f'{digit}: {prob:.6f}')
+#for digit, prob in enumerate(out1):
+#    print(f'{digit}: {prob:.6f}')
 pred = np.argmax(out1)
 print(f'Prediction: {pred}')
-
 
 input_file  = "input.ppm"
 output_file = "output.ppm"
 
-
-
-with postprocess(np.reshape(out1, (100, 30))) as img:
+image_height = 100 
+image_width = 100 
+with postprocess(np.reshape(out1, (image_height, image_width))) as img:
         print("Writing output image to file {}".format(output_file))
         img.convert('RGB').save(output_file, "PPM")
+
+
+
+labels_file = "/usr/src/tensorrt/data/resnet50/class_labels.txt"
+
+
+labels = open(labels_file, "r").read().split("\n")
+pred = labels[np.argmax(out1)]
+print(f'predout is {pred}')
+print(f'predout-str is {str(pred)}')
+#with postprocess(np.reshape(outputs[0].host, (224, 224))) as img:
+#        print("Writing output image to file {}".format(output_file))
+#        img.convert('RGB').save(output_file, "PPM")
