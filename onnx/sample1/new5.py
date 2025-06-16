@@ -22,7 +22,7 @@ b1 = trt.Builder(l1)
 print(f'builder is {b1}')
 
 profile = b1.create_optimization_profile();
-profile.set_shape("input", (3,224, 224, 3), (3,224, 224, 3), (3,224, 224, 3))
+profile.set_shape("input", (1,224, 224, 3), (1,224, 224, 3), (1,224, 224, 3))
 #config.add_optimization_profile(profile)
 
 
@@ -30,7 +30,7 @@ profile.set_shape("input", (3,224, 224, 3), (3,224, 224, 3), (3,224, 224, 3))
 
 #con1.set_input_shape("foo", (3, 150, 250))
 
-#print(f'profile is {profile}')
+print(f'profile is {profile}')
 
 n1 = b1.create_network()
 
@@ -203,9 +203,15 @@ print(f'stream is {stream}')
 
 tensor_names = [e1.get_tensor_name(i) for i in range(e1.num_io_tensors)]
 print(f'tensor name sare {tensor_names}')
+#idx1 = e1.getBidingIndex(tensor_names[0])
+#print(f'the profile-idx is {idx1}')
 profile_idx = 0 
 
 for binding in tensor_names:
+    bind1 = e1.get_tensor_shape(binding)
+    bind12 = e1.get_tensor_profile_shape(binding, profile_idx)[-1]
+    print(f'bind1 is {bind1}')
+    print(f'bind12 is {bind12}')
     shape = e1.get_tensor_shape(binding) if profile_idx is None else e1.get_tensor_profile_shape(binding, profile_idx)[-1]
     shape_valid = np.all([s >= 0 for s in shape])
     if not shape_valid and profile_idx is None:
@@ -213,6 +219,7 @@ for binding in tensor_names:
                 "but no profile was specified.")
     size = trt.volume(shape)
     trt_type = e1.get_tensor_dtype(binding)
+    print(f'tensor is {binding}')
     print(f'shape is {shape}')
     print(f'sze is {size}')
     print(f'trt_type is {trt_type}')
@@ -302,7 +309,7 @@ print(f'Prediction: {pred}')
 input_file  = "input.ppm"
 output_file = "output.ppm"
 
-image_height = 100 
+image_height = 10 
 image_width = 100 
 with postprocess(np.reshape(out1, (image_height, image_width))) as img:
         print("Writing output image to file {}".format(output_file))
