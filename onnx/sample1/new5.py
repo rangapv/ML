@@ -4,6 +4,7 @@
 
 import tensorflow as tf
 import tensorrt as trt
+import tensorflow.keras as ks
 import ctypes
 #import cuda.cuda as cuda
 import pycuda.driver as cuda
@@ -54,8 +55,9 @@ parser = trt.OnnxParser(n1, l1)
 
 print(f'parser is {parser}')
 
-success = parser.parse_from_file("/usr/src/tensorrt/data/resnet50/ResNet50.onnx")
+#success = parser.parse_from_file("/usr/src/tensorrt/data/resnet50/ResNet50.onnx")
 #success = parser.parse_from_file("./onnx1.onnx")
+success = parser.parse_from_file("./resnet50.onnx")
 
 print(f'success is {success}')
 
@@ -304,7 +306,12 @@ print(f'outputs or prediction is {outputs[0].host}')
 #for digit, prob in enumerate(out1):
 #    print(f'{digit}: {prob:.6f}')
 pred = np.argmax(out1)
+
+
 print(f'Prediction: {pred}')
+
+j1 = ks.applications.resnet50.decode_predictions(out)
+print(f'tensorRT prediction is {j1}')
 
 input_file  = "input.ppm"
 output_file = "output.ppm"
