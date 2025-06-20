@@ -302,17 +302,30 @@ print(f'sync1 is {sync1[0]}')
 print(F'OUT-PUTS IS {outputs[0]}')
 out1 = outputs[0].host
 print(f'outputs or prediction is {outputs[0].host}')
+print(f'out1 is {out1[0]}')
+print(f'type of out1 is {type(out1[0])}')
+
+print(f'type od out1 is {type(out1)}')
+print(f'shape od out1 is {out1.shape}')
+
+print(f'type od outputs[0] is {type(outputs[0])}')
+print(f'type od outputs[0[.hosts is {type(outputs[0].host)}')
 
 #for digit, prob in enumerate(out1):
 #    print(f'{digit}: {prob:.6f}')
-pred = np.argmax(out1)
 
+pred = np.argmax(out1[0])
+pred1 = np.argmax(out1)
 
+print(f'Pred1: {pred1}')
 print(f'Prediction: {pred}')
+print(f'Predi1: {pred1} & length of {len(out1)}')
 
-j1 = ks.applications.resnet50.decode_predictions(out)
-print(f'tensorRT prediction is {j1}')
-
+#j1 = ks.applications.resnet50.decode_predictions(out1[0])
+#print(f'tensorRT prediction is {j1}')
+res = out1.reshape(1,1000)
+j2 = ks.applications.resnet50.decode_predictions(res,top=5)
+print(f'tensorRT prediction is {j2}')
 input_file  = "input.ppm"
 output_file = "output.ppm"
 

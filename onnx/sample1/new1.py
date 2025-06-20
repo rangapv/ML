@@ -29,6 +29,9 @@ pre1 = ks.applications.resnet50.preprocess_input(nparray2)
 model = ks.applications.resnet50.ResNet50(weights='imagenet')
 
 y1 = model.predict(pre1)
+print(f'the type of ys is {type(y1)}')
+print(f'the shape of y1 is {y1.shape}')
+print(f'printed y1 is {y1}')
 
 y = ks.applications.resnet50.decode_predictions(y1)
 
@@ -49,8 +52,12 @@ output_names = [n.name for n in model_proto.graph.output]
 providers = ['CUDAExecutionProvider']
 
 m = rt.InferenceSession(output_path, providers=providers)
-
+print(f'the tpe of m is {m}')
+print(f'm is {m}')
 onnx_pred = m.run(output_names, {"input": pre1})
+print(f'the type of onnx_pred is  {type(onnx_pred)}')
+print(f'the shape of onnx_pred is  {onnx_pred}')
+print(f'printed onnx_pred is {onnx_pred}')
 
 print('ONNX Predicted:', ks.applications.resnet50.decode_predictions(onnx_pred[0], top=3)[0])
 print(f'tensor predicted is {y}')
