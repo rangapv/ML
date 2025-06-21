@@ -23,7 +23,7 @@ b1 = trt.Builder(l1)
 print(f'builder is {b1}')
 
 profile = b1.create_optimization_profile();
-profile.set_shape("input", (1,224, 224, 3), (1,224, 224, 3), (1,224, 224, 3))
+profile.set_shape("input", (1,224, 224,3), (1,224, 224,3), (1,224, 224,3))
 #config.add_optimization_profile(profile)
 
 
@@ -56,8 +56,8 @@ parser = trt.OnnxParser(n1, l1)
 print(f'parser is {parser}')
 
 #success = parser.parse_from_file("/usr/src/tensorrt/data/resnet50/ResNet50.onnx")
-#success = parser.parse_from_file("./onnx1.onnx")
-success = parser.parse_from_file("./resnet50.onnx")
+success = parser.parse_from_file("./onnx1.onnx")
+#success = parser.parse_from_file("./resnet50.onnx")
 
 print(f'success is {success}')
 
@@ -275,27 +275,29 @@ def postprocess(data):
 num_io = e1.num_io_tensors
 for i in range(num_io):
     cont1.set_tensor_address(e1.get_tensor_name(i), bindings[i])
+    print(f'name is {e1.get_tensor_name(i)}')
+    print(f'binding is {bindings[i]}')
 
-print(f'name is {e1.get_tensor_name(i)}')
-print(f'binding is {bindings[i]}')
 add1 = cont1.set_tensor_address(e1.get_tensor_name(i), bindings[i])
 print(f'add1 is {add1}')
 
 kind = cudart.cudaMemcpyKind.cudaMemcpyHostToDevice
-
-inp = inputs[0]
-result1 = cudart.cudaMemcpyAsync(inp.device, inp.host, inp.nbytes, kind, stream[1])
-#result1 = (cudart.cudaMemcpyAsync(inp.device, inp.host, inp.nbytes, kind, stream) for inp in inputs )
-print(f'result1 is {result1[0]}')
+print(f'the inputs are {inputs}')
+#inp = inputs[0]
+#result1 = cudart.cudaMemcpyAsync(inp.device, inp.host, inp.nbytes, kind, stream[1])
+result1 = (cudart.cudaMemcpyAsync(inp.device, inp.host, inp.nbytes, kind, stream) for inp in inputs )
+#print(f'result1 is {result1[0]}')
 #result1 = cudart.cudaMemcpyAsync(inputs[0]["device"],inputs[0]["host"],inputs[0]["nbytes"], kind, stream)
     
 cont2 = cont1.execute_async_v3(stream_handle=stream[1])
 
 print(f'cont2 is {cont2}')
-out = outputs[0]
+#out = outputs[0]
+print(f'outputs are {outputs}')
 kind = cudart.cudaMemcpyKind.cudaMemcpyDeviceToHost
-result2 = cudart.cudaMemcpyAsync(out.host, out.device, out.nbytes, kind, stream[1])
-print(f'result2 is {result2[0]}')
+#result2 = cudart.cudaMemcpyAsync(out.host, out.device, out.nbytes, kind, stream[1])
+result2 = (cudart.cudaMemcpyAsync(out.host, out.device, out.nbytes, kind, stream[1]) for out in outputs )
+print(f'result2 is {result2}')
     # Synchronize the stream
 sync1 = cudart.cudaStreamSynchronize(stream[1])
 print(f'sync1 is {sync1[0]}')
@@ -329,8 +331,8 @@ print(f'tensorRT prediction is {j2}')
 input_file  = "input.ppm"
 output_file = "output.ppm"
 
-image_height = 10 
-image_width = 100 
+image_height =  50 
+image_width = 20 
 with postprocess(np.reshape(out1, (image_height, image_width))) as img:
         print("Writing output image to file {}".format(output_file))
         img.convert('RGB').save(output_file, "PPM")
