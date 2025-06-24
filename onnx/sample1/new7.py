@@ -77,17 +77,20 @@ cont1 = e1.create_execution_context()
 
 print(f'the context is {cont1}')
 
-class engine(trt.EngineInspector):
-    def __init__(e1):
-        self.engine = self.e1
 
-inf1 = engine(e1) 
-print(f'the EngineInspe is {inf1}')
+insp = e1.create_engine_inspector()
+print(f'insp is {insp}')
 
-enginfo = inf1.get_engine_information()
+#enginfo = inf1.get_engine_information()
 
-print(f'the enfinfo is {enginfo}')
+#print(f'the enfinfo is {enginfo}')
+f1 = trt.LayerInformationFormat(1)
+print(f'f1 is {f1}')
+#print(f'f10 is {f1(1)}')
 
+tg2 = insp.get_engine_information(f1)
+
+print(f'tg2 is {tg2}')
 
 ser1 = e1.serialize()
 
