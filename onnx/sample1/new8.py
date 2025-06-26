@@ -46,9 +46,9 @@ with open(model_file, "rb") as model:
                 print(parser.get_error(error))
 #            return None
 
-#e1 = b1.build_engine_with_config(n1,c1)
+e1 = b1.build_engine_with_config(n1,c1)
 
-e1 = b1.build_serialized_network(n1, c1)
+#e1 = b1.build_serialized_network(n1, c1)
 
 cont1 = e1.create_execution_context()
 
@@ -64,9 +64,9 @@ ser1 = e1.serialize()
 
 ser2 = trt.Runtime(l1)
 
-#cuda1 = ser2.deserialize_cuda_engine(ser1)
+cuda1 = ser2.deserialize_cuda_engine(ser1)
 
-cuda1 = ser2.deserialize_cuda_engine(e1)
+#cuda1 = ser2.deserialize_cuda_engine(e1)
 
 
 #
