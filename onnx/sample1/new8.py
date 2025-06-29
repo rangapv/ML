@@ -248,11 +248,11 @@ print(f'type od outputs[0[.hosts is {type(outputs[0].host)}')
 #for digit, prob in enumerate(out1):
 #    print(f'{digit}: {prob:.6f}')
 
-pred = np.argmax(out1[0])
+pred2 = np.argmax(out1[0])
 pred1 = np.argmax(out1)
 
 print(f'Pred1: {pred1}')
-print(f'Prediction: {pred}')
+print(f'Prediction: {pred2}')
 print(f'Predi1: {pred1} & length of {len(out1)}')
 
 
@@ -261,7 +261,8 @@ print(f'Predi1: {pred1} & length of {len(out1)}')
 labels_file = "/usr/src/tensorrt/data/resnet50/class_labels.txt" 
 labels = open(labels_file, "r").read().split("\n")
 
-pred = labels[np.argmax(out1)]
+pred = labels[np.argmax(pred2)]
+#pred = labels[np.argmax(out1)]
 #common.free_buffers(inputs, outputs, stream)
 if "_".join(pred.split()) in os.path.splitext(os.path.basename(test_case))[0]:
     print("Correctly recognized " + test_case + " as " + pred)
