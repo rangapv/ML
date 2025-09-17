@@ -15,7 +15,8 @@ import numpy as np
 from typing import Optional, List, Union
 import os
 import sys
-
+import urllib
+import urllib.request
 
 from PIL import Image
 
@@ -255,6 +256,19 @@ print(f'Pred1: {pred1}')
 print(f'Prediction: {pred2}')
 print(f'Predi1: {pred1} & length of {len(out1)}')
 
+#newpred =  ks.applications.resnet50.decode_predictions(out1)
+#print(f'newpred is {newpred}')
+
+#labels
+label_url = 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt'
+class_labels = urllib.request.urlopen(label_url).read().splitlines()
+class_labels = class_labels[1:] # remove the first class which is background
+assert len(class_labels) == 1000
+
+# make sure entries of class_labels are strings
+for i, label in enumerate(class_labels):
+  if isinstance(label, bytes):
+    class_labels[i] = label.decode("utf8")
 
 #
 
@@ -262,6 +276,15 @@ labels_file = "/usr/src/tensorrt/data/resnet50/class_labels.txt"
 labels = open(labels_file, "r").read().split("\n")
 
 pred = labels[np.argmax(pred2)]
+pred1 = class_labels[np.argmax(pred2)]
+
+#print(f'the class labels1 is {labels}')
+#print(f'the class label2 is {class_labels}')
+print(f'pred prediction is {pred}')
+print(f'pred1 is prediction {pred1}')
+
+print('ONNX Predicted:', ks.applications.resnet50.decode_predictions(inputs))
+
 #pred = labels[np.argmax(out1)]
 #common.free_buffers(inputs, outputs, stream)
 if "_".join(pred.split()) in os.path.splitext(os.path.basename(test_case))[0]:
