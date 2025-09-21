@@ -87,6 +87,7 @@ def main():
     label_url = 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt'
     class_labels = urllib.request.urlopen(label_url).read().splitlines()
     class_labels = class_labels[1:] # remove the first class which is background
+    print(f'lables are {class_labels}')
     assert len(class_labels) == 1000
 
     # make sure entries of class_labels are strings
@@ -95,9 +96,12 @@ def main():
          class_labels[i] = label.decode("utf8")
 
     #labels = open(class_labels, "r").read().split("\n")
-
+    labels_file = class_labels
     labels_file = "/usr/src/tensorrt/data/resnet50/class_labels.txt" 
+    print(f'new labels is {labels_file}')
+    #labels = open(labels_file, "r")
     labels = open(labels_file, "r").read().split("\n")
+    print(f'labels de-coded is {labels}')
 
     # Build a TensorRT engine.
     engine = build_engine_onnx(onnx_model_file)

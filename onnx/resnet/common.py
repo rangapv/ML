@@ -28,12 +28,22 @@ except NameError:
 def GiB(val):
     return val * 1 << 30
 
+
+
+def cuda_call(call):
+    err, res = call[0], call[1:]
+    check_cuda_err(err)
+    if len(res) == 1:
+        res = res[0]
+    return res
+
+
 class HostDeviceMem:
     """Pair of host and device memory, where the host memory is wrapped in a numpy array"""
     def __init__(self, size: int, dtype: Optional[np.dtype] = None):
         dtype = dtype or np.dtype(np.uint8)
         nbytes = size * dtype.itemsize
-        host_mem = (cudart.cudaMallocHost(nbytes))
+        host_mem = cuda_call(cudart.cudaMallocHost(nbytes))
         pointer_type = ctypes.POINTER(np.ctypeslib.as_ctypes_type(dtype))
         print(f'dtype is {dtype}')
         print(f'nbyres os {nbytes}')
@@ -44,10 +54,11 @@ class HostDeviceMem:
         #print(f'the host mem pointer is {hm1}')
         ctypescast1 = ctypes.cast(host_mem[1], pointer_type)
         print(f'ctypecast1 is {ctypescast1}')
-        self._host = np.ctypeslib.as_array(ctypescast1, (size,))
-        #self._host = np.ctypeslib.as_array(ctypes.cast(host_mem, pointer_type), (size,))
+        #self._host = np.ctypeslib.as_array(ctypescast1, (size,))
+        self._host = np.ctypeslib.as_array(ctypes.cast(host_mem, pointer_type), (size,))
         dv1 = cudart.cudaMalloc(nbytes)
-        self._device = (dv1[1])
+        #self._device = (dv1[1])
+        self._device = cuda_call(cudart.cudaMalloc(nbytes))
         self._nbytes = nbytes
 
     @property
@@ -81,58 +92,58 @@ class HostDeviceMem:
         return self.__str__()
 
     def free(self):
-        (cudart.cudaFree(self.device))
-        (cudart.cudaFreeHost(self.host.ctypes.data))
+        cuda_call(cudart.cudaFree(self.device))
+        cuda_call(cudart.cudaFreeHost(self.host.ctypes.data))
 
 #
 def allocate_buffers(engine: trt.ICudaEngine, profile_idx: Optional[int] = None):
  inputs = []
  outputs = []
  bindings = []
- stream = cudart.cudaStreamCreate()
+ stream = cuda_call(cudart.cudaStreamCreate())
  print(f'stream is {stream}')
 
- tensor_names = [e1.get_tensor_name(i) for i in range(e1.num_io_tensors)]
+ tensor_names = [engine.get_tensor_name(i) for i in range(engine.num_io_tensors)]
  print(f'tensor name sare {tensor_names}')
 #idx1 = e1.getBidingIndex(tensor_names[0])
 #print(f'the profile-idx is {idx1}')
- profile_idx = 0
+ #profile_idx = 0
 
  for binding in tensor_names:
-    bind1 = e1.get_tensor_shape(binding)
-    bind12 = e1.get_tensor_profile_shape(binding, profile_idx)[-1]
+    bind1 = engine.get_tensor_shape(binding)
+    bind12 = engine.get_tensor_profile_shape(binding, profile_idx)[-1]
     print(f'bind1 is {bind1}')
     print(f'bind12 is {bind12}')
-    shape = e1.get_tensor_shape(binding) if profile_idx is None else e1.get_tensor_profile_shape(binding, profile_idx)[-1]
+    shape = engine.get_tensor_shape(binding) if profile_idx is None else engine.get_tensor_profile_shape(binding, profile_idx)[-1]
     shape_valid = np.all([s >= 0 for s in shape])
     if not shape_valid and profile_idx is None:
        raise ValueError(f"Binding {binding} has dynamic shape, " +\
                 "but no profile was specified.")
     size = trt.volume(shape)
-    trt_type = e1.get_tensor_dtype(binding)
+    trt_type = engine.get_tensor_dtype(binding)
     print(f'tensor is {binding}')
     print(f'shape is {shape}')
     print(f'sze is {size}')
     print(f'trt_type is {trt_type}')
 
-    if trt.nptype(trt_type):
-         dtype = np.dtype(trt.nptype(trt_type))
-         print(f'in f dtype is {dtype}')
-         bindingMemory = HostDeviceMem(size, dtype)
-    else: # no numpy support: create a byte array instead (BF16, FP8, INT4)
-         size = int(size * trt_type.itemsize)
-         bindingMemory = HostDeviceMem(size)
 
+    try:
+        dtype = np.dtype(trt.nptype(trt_type))
+        bindingMemory = HostDeviceMem(size, dtype)
+    except TypeError: # no numpy support: create a byte array instead (BF16, FP8, INT4)
+        size = int(size * trt_type.itemsize)
+        bindingMemory = HostDeviceMem(size)
 
+    # Append the device buffer to device bindings.
     bindings.append(int(bindingMemory.device))
+
     # Append to the appropriate list.
-    if e1.get_tensor_mode(binding) == trt.TensorIOMode.INPUT:
-         inputs.append(bindingMemory)
+    if engine.get_tensor_mode(binding) == trt.TensorIOMode.INPUT:
+        inputs.append(bindingMemory)
     else:
-         outputs.append(bindingMemory)
-    #return inputs, outputs, bindings, stream
-    print(f'binding memeory is {bindingMemory} for {binding}')
-    print(f'binding  deviceis {bindingMemory.device}for {binding}')
+        outputs.append(bindingMemory)
+ return inputs, outputs, bindings, stream
+
 
 
 def memcpy_host_to_device(device_ptr: int, host_arr: np.ndarray):
@@ -143,8 +154,6 @@ def memcpy_host_to_device(device_ptr: int, host_arr: np.ndarray):
 def memcpy_device_to_host(host_arr: np.ndarray, device_ptr: int):
     nbytes = host_arr.size * host_arr.itemsize
     cuda_call(cudart.cudaMemcpy(host_arr, device_ptr, nbytes, cudart.cudaMemcpyKind.cudaMemcpyDeviceToHost))
-
-
 
 
 def _do_inference_base(inputs, outputs, stream, execute_async_func):
