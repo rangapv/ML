@@ -88,7 +88,7 @@ def load_normalized_test_case(test_image, pagelocked_buffer):
 def main():
     # Set the data path to the directory that contains the trained models and test images for inference.
     # Get test images, models and labels.
-    test_images = ["./binoculars.jpeg"]
+    test_images = ["./daisy.jpeg","./binoculars.jpeg","./beach.jpg"]
     #test_images = ["./beach.jpg","./car.JPEG"]
     onnx_model_file = "/usr/src/tensorrt/data/resnet50/ResNet50.onnx"
     #onnx_model_file = "./resnet50.onnx"
