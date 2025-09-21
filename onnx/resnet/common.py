@@ -30,6 +30,16 @@ def GiB(val):
 
 
 
+def check_cuda_err(err):
+    if isinstance(err, cuda.CUresult):
+        if err != cuda.CUresult.CUDA_SUCCESS:
+            raise RuntimeError("Cuda Error: {}".format(err))
+    if isinstance(err, cudart.cudaError_t):
+        if err != cudart.cudaError_t.cudaSuccess:
+            raise RuntimeError("Cuda Runtime Error: {}".format(err))
+    else:
+        raise RuntimeError("Unknown error type: {}".format(err))
+
 def cuda_call(call):
     err, res = call[0], call[1:]
     check_cuda_err(err)
@@ -52,8 +62,8 @@ class HostDeviceMem:
         print(f'pointer type is {pointer_type}')
         #hm1 = ctypes.pointer(host_mem)
         #print(f'the host mem pointer is {hm1}')
-        ctypescast1 = ctypes.cast(host_mem[1], pointer_type)
-        print(f'ctypecast1 is {ctypescast1}')
+        #ctypescast1 = ctypes.cast(host_mem[1], pointer_type)
+        #print(f'ctypecast1 is {ctypescast1}')
         #self._host = np.ctypeslib.as_array(ctypescast1, (size,))
         self._host = np.ctypeslib.as_array(ctypes.cast(host_mem, pointer_type), (size,))
         dv1 = cudart.cudaMalloc(nbytes)
@@ -111,9 +121,9 @@ def allocate_buffers(engine: trt.ICudaEngine, profile_idx: Optional[int] = None)
 
  for binding in tensor_names:
     bind1 = engine.get_tensor_shape(binding)
-    bind12 = engine.get_tensor_profile_shape(binding, profile_idx)[-1]
-    print(f'bind1 is {bind1}')
-    print(f'bind12 is {bind12}')
+    #bind12 = engine.get_tensor_profile_shape(binding, profile_idx)[-1]
+    #print(f'bind1 is {bind1}')
+    #print(f'bind12 is {bind12}')
     shape = engine.get_tensor_shape(binding) if profile_idx is None else engine.get_tensor_profile_shape(binding, profile_idx)[-1]
     shape_valid = np.all([s >= 0 for s in shape])
     if not shape_valid and profile_idx is None:
@@ -155,6 +165,11 @@ def memcpy_device_to_host(host_arr: np.ndarray, device_ptr: int):
     nbytes = host_arr.size * host_arr.itemsize
     cuda_call(cudart.cudaMemcpy(host_arr, device_ptr, nbytes, cudart.cudaMemcpyKind.cudaMemcpyDeviceToHost))
 
+
+def free_buffers(inputs: List[HostDeviceMem], outputs: List[HostDeviceMem], stream: cudart.cudaStream_t):
+    for mem in inputs + outputs:
+        mem.free()
+    cuda_call(cudart.cudaStreamDestroy(stream))
 
 def _do_inference_base(inputs, outputs, stream, execute_async_func):
     # Transfer input data to the GPU.

@@ -25,6 +25,7 @@ import sys
 import urllib
 import urllib.request
 
+from PIL import Image
 
 class ModelData(object):
     MODEL_PATH = "ResNet50.onnx"
@@ -39,7 +40,7 @@ TRT_LOGGER = trt.Logger(trt.Logger.WARNING)
 
 def build_engine_onnx(model_file):
     builder = trt.Builder(TRT_LOGGER)
-    network = builder.create_network(0)
+    network = builder.create_network()
     config = builder.create_builder_config()
     parser = trt.OnnxParser(network, TRT_LOGGER)
 
@@ -52,8 +53,15 @@ def build_engine_onnx(model_file):
                 print(parser.get_error(error))
             return None
 
+    #e1 = builder.build_engine_with_config(network,config)
+    
+    #cont1 = e1.create_execution_context()
+
+    #ser1 = e1.serialize()
+
     engine_bytes = builder.build_serialized_network(network, config)
     runtime = trt.Runtime(TRT_LOGGER)
+    #return runtime.deserialize_cuda_engine(ser1)
     return runtime.deserialize_cuda_engine(engine_bytes)
 
 
@@ -80,8 +88,10 @@ def load_normalized_test_case(test_image, pagelocked_buffer):
 def main():
     # Set the data path to the directory that contains the trained models and test images for inference.
     # Get test images, models and labels.
-    test_images = ["./beach.jpg","./car.JPEG"]
-    onnx_model_file = "./resnet50.onnx"
+    test_images = ["./binoculars.jpeg"]
+    #test_images = ["./beach.jpg","./car.JPEG"]
+    onnx_model_file = "/usr/src/tensorrt/data/resnet50/ResNet50.onnx"
+    #onnx_model_file = "./resnet50.onnx"
 
     #labels
     label_url = 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt'
@@ -124,8 +134,6 @@ def main():
         outputs=outputs,
         stream=stream,
     )
-
-
 
 
 # We use the highest probability as our prediction. Its index corresponds to the predicted label.
