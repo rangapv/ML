@@ -88,8 +88,8 @@ def load_normalized_test_case(test_image, pagelocked_buffer):
 def main():
     # Set the data path to the directory that contains the trained models and test images for inference.
     # Get test images, models and labels.
-    test_images = ["./daisy.jpeg","./binoculars.jpeg","./beach.jpg"]
-    #test_images = ["./beach.jpg","./car.JPEG"]
+    #test_images = ["./daisy.jpeg","./binoculars.jpeg","./beach.jpg"]
+    test_images = ["./English_setter.jpg"]
     onnx_model_file = "/usr/src/tensorrt/data/resnet50/ResNet50.onnx"
     #onnx_model_file = "./resnet50.onnx"
 
@@ -120,7 +120,15 @@ def main():
     inputs, outputs, bindings, stream = common.allocate_buffers(engine)
     # Contexts are used to perform inference.
     context = engine.create_execution_context()
+    
+    insp = engine.create_engine_inspector()
 
+    f1 = trt.LayerInformationFormat(1)
+
+    tg2 = insp.get_engine_information(f1)
+
+    print(f'tg2 is {tg2}')
+    print(f'***********************')
     # Load a normalized test case into the host input page-locked buffer.
     test_image = random.choice(test_images)
     test_case = load_normalized_test_case(test_image, inputs[0].host)
@@ -138,6 +146,7 @@ def main():
 
 # We use the highest probability as our prediction. Its index corresponds to the predicted label.
     pred = labels[np.argmax(trt_outputs[0])]
+    print(f'argmax is {np.argmax(trt_outputs[0])}')
     common.free_buffers(inputs, outputs, stream)
     if "_".join(pred.split()) in os.path.splitext(os.path.basename(test_case))[0]:
         print("Correctly recognized " + test_case + " as " + pred)

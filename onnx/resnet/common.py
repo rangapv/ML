@@ -1,4 +1,5 @@
 
+
 import argparse
 import os
 
@@ -16,14 +17,6 @@ import os
 import sys
 import urllib
 import urllib.request
-
-
-try:
-    # Sometimes python does not understand FileNotFoundError
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError
-
 
 def GiB(val):
     return val * 1 << 30
