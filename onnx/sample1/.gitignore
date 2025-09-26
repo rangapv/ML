@@ -1,4 +1,5 @@
-*.keras
 *.onnx
+*.h5
 *.jpg
-./data/
+*.jpeg
+*.keras
