@@ -27,7 +27,7 @@ from PIL import Image
 
 class ModelData(object):
     MODEL_PATH = "./onnx1.onnx"
-    INPUT_SHAPE = (1, 224, 224)
+    INPUT_SHAPE = (None, 224, 224)
     # We can convert TensorRT data types to numpy types with trt.nptype()
     DTYPE = trt.float32
 
@@ -92,9 +92,12 @@ def main():
     # Set the data path to the directory that contains the trained models and test images for inference.
     # Get test images, models and labels.
     #test_images = ["./daisy.jpeg","./binoculars.jpeg","./beach.jpg"]
-    test_images = ["./beach.jpg"]
-    #onnx_model_file = "/usr/src/tensorrt/data/resnet50/ResNet50.onnx"
-    onnx_model_file = "./onnx1.onnx"
+    # test_images = ["./daisy.jpeg"]
+    test_images = ["./English_setter.jpg"]
+    #test_images = ["./binoculars.jpeg"]
+    #test_images = ["./beach.jpg"]
+    onnx_model_file = "/usr/src/tensorrt/data/resnet50/ResNet50.onnx"
+    #onnx_model_file = "./onnx1.onnx"
 
     #labels
     label_url = 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt'
