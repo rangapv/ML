@@ -3,9 +3,11 @@
 #12-12-25
 
 from tensorrt_llm import SamplingParams
-from tensorrt_llm._tensorrt_engine import LLM
+from tensorrt_llm import LLM
+#from tensorrt_llm._tensorrt_engine import LLM
 from tensorrt_llm.llmapi import KvCacheConfig
 from tensorrt_llm.llmapi import BatchingType
+from tensorrt_llm.llmapi import ExtendedRuntimePerfKnobConfig
 
 def main():
 
@@ -15,7 +17,9 @@ def main():
               #kv_cache_config_dtype='auto',
               kv_cache_config=KvCacheConfig(enable_block_reuse=True,dtype='auto',
                                             event_buffer_max_size=1024),
-              batching_type=BatchingType(''),
+              #batching_type=BatchingType.INFLIGHT,
+              max_seq_len=512,
+              #extended_runtime_perf_knob_config=None,
               backend="pytorch")
 
     # Sample prompts having a common prefix.
