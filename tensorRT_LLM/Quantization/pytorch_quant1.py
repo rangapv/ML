@@ -3,7 +3,8 @@
 #09-12-25
 
 from tensorrt_llm import LLM, SamplingParams
-from tensorrt_llm.quantization import QuantAlgo
+#from tensorrt_llm.quantization import QuantAlgo
+from tensorrt_llm.llmapi import QuantAlgo
 
 def main():
     # Model could accept HF model name, a path to local HF model,

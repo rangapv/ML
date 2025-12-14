@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 #author:rangapv@yahoo.com
-#09-12-25
+#12-12-25
 
-from tensorrt_llm import LLM, SamplingParams
-#from tensorrt_llm.llmapi import QuantAlgo
+#This code will not work since quant_config is for tensorrt backend.
+
+from tensorrt_llm import SamplingParams
+from tensorrt_llm import LLM
+from tensorrt_llm.llmapi import KvCacheConfig, QuantConfig
 from tensorrt_llm.quantization import QuantAlgo
 
 def main():
     # Model could accept HF model name, a path to local HF model,
     # or TensorRT Model Optimizer's quantized checkpoints like nvidia/Llama-3.1-8B-Instruct-FP8 on HF.
-    algo_quant=QuantAlgo('W4A16_AWQ')
 #   config_quant=QuantConfig(quant_algo=algo_quant)
-    quantization=algo_quant
-    llm = LLM(model="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+    quant_algo1=QuantAlgo('W4A16_AWQ')
+    kv_cache_algo1=quant_algo1
+    quant_config1=QuantConfig(quant_algo=quant_algo1)
+
+    llm = LLM(model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",quant_config=quant_config1)
 
     # Sample prompts.
     prompts = [
@@ -20,11 +25,11 @@ def main():
         "The capital of France is",
         "The future of AI is",
         "What day is celebrated today ?",
-    ]
+         ]
     # Create a sampling params.
     sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
 
-    for output in llm.generate(prompts, sampling_params, quantization):
+    for output in llm.generate(prompts, sampling_params):
         print(
             f"Prompt: {output.prompt!r}, Generated text: {output.outputs[0].text!r}"
         )

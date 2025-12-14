@@ -4,19 +4,23 @@
 
 from tensorrt_llm import SamplingParams
 from tensorrt_llm._tensorrt_engine import LLM
-from tensorrt_llm.llmapi import KvCacheConfig
+from tensorrt_llm.llmapi import KvCacheConfig, QuantAlgo, QuantConfig
 from tensorrt_llm.llmapi.llm_args import BatchingType
 
 def main():
+    algo_quant=QuantAlgo('W4A16_AWQ')
+#   config_quant=QuantConfig(quant_algo=algo_quant)
+    quantization=algo_quant
+    quant_config1=QuantConfig(quant_algo=algo_quant)
 
     llm = LLM(model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
               tensor_parallel_size=1,
               #enable_autotuner=False,
               #kv_cache_dtype='auto',
+              quant_config=quant_config1,
               kv_cache_config=KvCacheConfig(enable_block_reuse=True,
                                             event_buffer_max_size=1024),
               )
-              #backend="pytorch")
 
     # Sample prompts having a common prefix.
     common_prefix = (

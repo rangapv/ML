@@ -7,9 +7,15 @@ from tensorrt_llm import LLM
 #from tensorrt_llm._tensorrt_engine import LLM
 from tensorrt_llm.llmapi import KvCacheConfig
 from tensorrt_llm.llmapi import BatchingType
+from tensorrt_llm.llmapi import QuantConfig
+from tensorrt_llm.quantization import QuantAlgo
 from tensorrt_llm.llmapi import ExtendedRuntimePerfKnobConfig
 
 def main():
+    algo_quant=QuantAlgo('W4A16_AWQ')
+#   config_quant=QuantConfig(quant_algo=algo_quant)
+    quantization=algo_quant
+    #quant_config1=QuantConfig(quant_algo=algo_quant)
 
     llm = LLM(model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
               tensor_parallel_size=1,
@@ -18,9 +24,9 @@ def main():
               kv_cache_config=KvCacheConfig(enable_block_reuse=True,dtype='auto',
                                             event_buffer_max_size=1024),
               #batching_type=BatchingType.INFLIGHT,
-              max_seq_len=512,
+              max_seq_len=512)
               #extended_runtime_perf_knob_config=None,
-              backend="pytorch")
+              #backend="pytorch")
 
     # Sample prompts having a common prefix.
     common_prefix = (
@@ -39,7 +45,7 @@ def main():
                                      top_p=0.001,
                                      max_tokens=5)
 
-    for output in llm.generate(prompts, sampling_params=sampling_params):
+    for output in llm.generate(prompts, sampling_params, quantization):
         print(
             f"Prompt: {output.prompt!r}, Generated text: {output.outputs[0].text!r}"
         )

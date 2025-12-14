@@ -11,7 +11,6 @@ def main():
     # or TensorRT Model Optimizer's quantized checkpoints like nvidia/Llama-3.1-8B-Instruct-FP8 on HF.
 #   config_quant=QuantConfig(quant_algo=algo_quant)
     quant_algo1=QuantAlgo('W4A16_AWQ')
-    kv_cache_algo1=quant_algo1
     quant_config1=QuantConfig(quant_algo=quant_algo1)
 
     llm = LLM(model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",quant_config=quant_config1)
