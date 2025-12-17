@@ -18,13 +18,17 @@ def main():
     #quant_config1=QuantConfig(quant_algo=algo_quant)
 
     llm = LLM(model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-              tensor_parallel_size=2,
-              enable_autotuner=False,
+              tensor_parallel_size=1,
+              #enable_autotuner=False,
               #kv_cache_config_dtype='auto',
+              #kv_cache_config=KvCacheConfig(enable_block_reuse=True,dtype='auto',
+              #                              event_buffer_max_size=1024),
               kv_cache_config=KvCacheConfig(enable_block_reuse=True,dtype='auto',
-                                            event_buffer_max_size=1024),
+                                                              event_buffer_max_size=1024)
+
               #batching_type=BatchingType.INFLIGHT,
-              max_seq_len=512)
+              #max_seq_len=512)
+              )
               #extended_runtime_perf_knob_config=None,
               #backend="pytorch")
 
