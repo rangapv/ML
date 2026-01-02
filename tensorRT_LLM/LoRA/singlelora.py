@@ -9,8 +9,9 @@ from tensorrt_llm.executor.request import LoRARequest
 from tensorrt_llm.sampling_params import SamplingParams
 
 #base_model="meta-llama/llama-7b-hf/"
-base_model="TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-#base_model="meta-llama/Llama-2-7b-hf/"
+#base_model="TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+base_model="meta-llama/Llama-2-7b-hf"
+##meta-llama/Llama-2-7b-hf
 lora_weights="kunishou/Japanese-Alpaca-LoRA-7b-v0"
 #kunishou/Japanese-Alpaca-LoRA-7b-v0
 
@@ -25,7 +26,7 @@ lora_config = LoraConfig(
 
 # Initialize LLM with LoRA support
 llm = LLM(
-    model="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    model=base_model,
     lora_config=lora_config
 )
 
