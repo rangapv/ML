@@ -1,1 +1,6 @@
 tf_keras
+transformers==4.50.3
+accelerate==1.12.0
+torchvision==0.24.1
+peft==0.18.1
+

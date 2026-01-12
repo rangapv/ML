@@ -7,11 +7,14 @@ from transformers import Trainer, TrainingArguments
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import get_peft_model, LoraConfig, TaskType
 from peft import prepare_model_for_kbit_training
+import pandas as pd
+from peft import PeftModelForSequenceClassification, get_peft_config
+from peft import PeftModel, PeftConfig
 
 base_model = "gpt2"
 #base_model="meta-llama/Llama-2-7b-hf"
-tokenizer = AutoTokenizer.from_pretrained(base_model)
-model = AutoModelForCausalLM.from_pretrained(base_model)
+tokenizer = AutoTokenizer.from_pretrained("gpt2",num_labels=128)
+model = AutoModelForCausalLM.from_pretrained("gpt2")
 
 tokenizer.pad_token = tokenizer.eos_token
 model.resize_token_embeddings(len(tokenizer))
@@ -25,25 +28,51 @@ lora_config = LoraConfig(
     task_type=TaskType.CAUSAL_LM # Causal Language Modeling task
 )
 
-
+model = prepare_model_for_kbit_training(model)
 model = get_peft_model(model, lora_config)
 model.print_trainable_parameters()
 
 #model = get_peft_model(model, lora_config)
 
 # Load small dataset
+
+
 dataset = load_dataset("imdb", split="train[:1%]")
+#dataset = dataset1.batch(batch_size=8)
+#print(dataset[1])
+#print(dataset[2])
+
+
 
 # Preprocess the data
 def tokenize(example):
-    encoding = tokenizer(example["text"], padding="max_length", truncation=True, max_length=128)
-#    encoding["label"] = [label for label in example["label"]]
+    #print(example["text"])
+    #print(example)
+    encoding = tokenizer(str([example["text"],]), padding="max_length", truncation=True, max_length=250)
+#    encoding["labels"] = example["label"]
+    #encoding["label"] = [label for label in example["labels"]]
     return encoding 
     
   
 tokenized_dataset = dataset.map(tokenize, batched=True)
+print("before tok")
+print("********************************")
+print(tokenized_dataset)
+print(tokenized_dataset[2])
+print(tokenized_dataset[1])
+print("after tok")
+print("**************************")
+
 #tokenized_dataset.set_format(type="torch", columns=["input_ids", "label"])
-tokenized_dataset.set_format(type="torch", columns=["input_ids", "attention_mask"])
+tokenized_dataset.set_format(type="torch")
+#tokenized_dataset.set_format(type="torch", columns=["label", "input_ids", "attention_mask"])
+print("before tok1")
+print("********************************")
+print(tokenized_dataset)
+print(tokenized_dataset[2])
+print(tokenized_dataset[1])
+print("after tok1")
+print("**************************")
 
 small_train_dataset = tokenized_dataset
 
@@ -57,13 +86,14 @@ print("after decode")
 
 training_args = TrainingArguments(
     output_dir="./lora_imdb",
-    per_device_train_batch_size=4,
+    per_device_train_batch_size=8,
+    per_device_eval_batch_size=8,
     num_train_epochs=1,
     logging_steps=10,
     save_steps=100,
     save_total_limit=2,
     fp16=True,
-    #label_names=["label"],
+    label_names=["label"],
 #    remove_unused_columns=False,
     report_to="none"
 )
@@ -79,8 +109,8 @@ trainer.train()
 # Save the LoRA adapter (not full model)
 model.save_pretrained("./lora_adapter_only")
 tokenizer.save_pretrained("./lora_adapter_only")
-base_model1 = AutoModelForCausalLM.from_pretrained(base_model)
-tokenizer = AutoTokenizer.from_pretrained(base_model)
+base_model1 = AutoModelForCausalLM.from_pretrained("gpt2")
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
 peft_model = PeftModel.from_pretrained(base_model1, "./lora_adapter_only")
 peft_model.eval()
