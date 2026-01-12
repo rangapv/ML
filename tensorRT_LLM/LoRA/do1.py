@@ -13,8 +13,9 @@ from peft import PeftModel, PeftConfig
 
 base_model = "gpt2"
 #base_model="meta-llama/Llama-2-7b-hf"
-tokenizer = AutoTokenizer.from_pretrained("gpt2",num_labels=128)
-model = AutoModelForCausalLM.from_pretrained("gpt2")
+tokenizer = AutoTokenizer.from_pretrained(base_model)
+#tokenizer = AutoTokenizer.from_pretrained(base_model,num_labels=128)
+model = AutoModelForCausalLM.from_pretrained(base_model)
 
 tokenizer.pad_token = tokenizer.eos_token
 model.resize_token_embeddings(len(tokenizer))
@@ -39,8 +40,10 @@ model.print_trainable_parameters()
 
 dataset = load_dataset("imdb", split="train[:1%]")
 #dataset = dataset1.batch(batch_size=8)
-#print(dataset[1])
-#print(dataset[2])
+print("dataset 1")
+print(dataset[1])
+print(dataset[2])
+print("dataset 1")
 
 
 
@@ -65,6 +68,7 @@ print("**************************")
 
 #tokenized_dataset.set_format(type="torch", columns=["input_ids", "label"])
 tokenized_dataset.set_format(type="torch")
+#tokenized_dataset.set_format(type="torch", columns=["text","label","input_ids", "attention_mask"])
 #tokenized_dataset.set_format(type="torch", columns=["label", "input_ids", "attention_mask"])
 print("before tok1")
 print("********************************")
@@ -109,14 +113,14 @@ trainer.train()
 # Save the LoRA adapter (not full model)
 model.save_pretrained("./lora_adapter_only")
 tokenizer.save_pretrained("./lora_adapter_only")
-base_model1 = AutoModelForCausalLM.from_pretrained("gpt2")
-tokenizer = AutoTokenizer.from_pretrained("gpt2")
+base_model1 = AutoModelForCausalLM.from_pretrained(base_model)
+tokenizer = AutoTokenizer.from_pretrained(base_model)
 
 peft_model = PeftModel.from_pretrained(base_model1, "./lora_adapter_only")
 peft_model.eval()
 
 # Inference
-prompt = "Once upon a time"
+prompt = "No Country for Old Men" 
 inputs = tokenizer(prompt, return_tensors="pt")
 outputs = peft_model.generate(**inputs, max_new_tokens=50)
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
