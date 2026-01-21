@@ -22,8 +22,8 @@ pipeline = DiffusionPipeline.from_pretrained(
 )
 
 prompt = """
-cinematic film still of a cat sipping a margarita in a pool in Palm Springs, California
+cinematic film still of a cat talking on a iPhone on a beach during sunrise 
 highly detailed, high budget hollywood movie, cinemascope, moody, epic, gorgeous, film grain
 """
-image=pipeline(prompt).images[0]
-image.save("result.png")
+image4=pipeline(prompt).images[0]
+image4.save("result4.png")
