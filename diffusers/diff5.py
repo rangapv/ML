@@ -27,8 +27,8 @@ def download_image(url):
 
 
 
-init_image=download_image("./result4.png").resize((512, 512))
-mask_image=download_image("./result5.png").resize((512, 512))
+init_image=download_image("./result.png").resize((512, 512))
+mask_image=download_image("./result15.png").resize((512, 512))
 
 pipe = StableDiffusionInpaintPipeline.from_pretrained(
     "stable-diffusion-v1-5/stable-diffusion-inpainting", torch_dtype=torch.float16
@@ -36,8 +36,7 @@ pipe = StableDiffusionInpaintPipeline.from_pretrained(
 pipe = pipe.to("cuda")
 
 prompt = """
-Convert the background to skyblue
-highly detailed, high budget hollywood movie, cinemascope, moody, epic, gorgeous, film grain
+Salmon fillet and brocolli only from the image mask everthing in mask_image preserve the original,  high resolution
 """
 image = pipe(prompt=prompt, image=init_image, mask_image=mask_image).images[0]
-image.save("result52.png")
+image.save("result56.png")
