@@ -31,12 +31,12 @@ init_image=download_image("./result.png").resize((512, 512))
 mask_image=download_image("./result15.png").resize((512, 512))
 
 pipe = StableDiffusionInpaintPipeline.from_pretrained(
-    "stable-diffusion-v1-5/stable-diffusion-inpainting", torch_dtype=torch.float16
+    "stable-diffusion-v1-5/stable-diffusion-inpainting", torch_dtype=torch.float16, use_safetensors=False
 )
 pipe = pipe.to("cuda")
 
 prompt = """
-Salmon fillet and brocolli only from the image mask everthing in mask_image preserve the original,  high resolution
+high resolution
 """
 image = pipe(prompt=prompt, image=init_image, mask_image=mask_image).images[0]
-image.save("result56.png")
+image.save("result57.png")

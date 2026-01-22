@@ -1,2 +1,4 @@
 model*
+*.png
+.*
 *_cache*
