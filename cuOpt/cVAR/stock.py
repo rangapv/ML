@@ -182,8 +182,8 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
         for i in range(n_assets):
             if scenarios[s, i] != 0:
                 cvar_constraint_expr += w[i] * scenarios[s, i]
-
         problem.addConstraint(cvar_constraint_expr >= 0.0, name=f"cvar_{s}")
+    print(f"the contratint expression is ****{cvar_constraint_expr}****")
 
     # Solve the optimization problem
     if solver_settings is not None:
@@ -210,8 +210,8 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
 ##
 
 # Set optimization parameters
-alpha = 0.95  # 95% confidence level
-lambda_risk = 2.0  # Risk aversion parameter
+alpha = 0.89  # 95% confidence level
+lambda_risk = 4.0  # Risk aversion parameter
 
 # Portfolio weight bounds for DIVERSIFIED portfolio
 w_min = np.zeros(n_assets)  # No short selling
