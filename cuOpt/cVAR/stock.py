@@ -210,8 +210,8 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
 ##
 
 # Set optimization parameters
-alpha = 0.89  # 95% confidence level
-lambda_risk = 4.0  # Risk aversion parameter
+alpha = 0.95  # 95% confidence level
+lambda_risk = 4.5  # Risk aversion parameter
 
 # Portfolio weight bounds for DIVERSIFIED portfolio
 w_min = np.zeros(n_assets)  # No short selling
@@ -272,10 +272,15 @@ portfolio_df = pd.DataFrame({
 # Sort by weight (descending)
 portfolio_df = portfolio_df.sort_values('Weight', ascending=False)
 
+print(f"Portolio is {portfolio_df}")
+print(f"total number of stocks selected is {len(portfolio_df)}")
+
 # Display portfolio composition (top holdings only)
 significant_holdings = portfolio_df[portfolio_df['Weight'] > 0.001]  # Only assets with weight > 0.1%
 top_holdings = significant_holdings.head(20)  # Show top 20 holdings
 
+
+print(f"Portfolio which is > 0.001 is {significant_holdings} and its total is {len(significant_holdings)}")
 print("Optimal Portfolio Composition (Top 20 Holdings):")
 print("=" * 70)
 for _, row in top_holdings.iterrows():
