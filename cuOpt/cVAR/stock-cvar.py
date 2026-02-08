@@ -141,6 +141,10 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
     # CVaR auxiliary variables
     t = problem.addVariable(name="t", vtype=VType.CONTINUOUS,
                            lb=-float('inf'), ub=float('inf'))  # VaR variable
+    u = {}
+    for s in range(n_scenarios):
+        u[s] = problem.addVariable(name=f"u_{s}", vtype=VType.CONTINUOUS,
+                                  lb=0.0, ub=float('inf'))  # CVaR auxiliary
 
     # Objective: maximize expected return - lambda * CVaR
     # CVaR = t + (1/(1-alpha)) * sum(p_s * u_s)
@@ -154,6 +158,10 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
     # Subtract CVaR terms to penalize higher risk (lower CVaR increases objective value)
     if lambda_risk != 0:
         objective_expr -= t * lambda_risk
+        cvar_coeff = lambda_risk / (1.0 - alpha)
+        for s in range(n_scenarios):
+            if scenario_probs[s] != 0:
+                objective_expr -= u[s] * (cvar_coeff * scenario_probs[s])
 
     problem.setObjective(objective_expr, sense.MAXIMIZE)
 
@@ -167,6 +175,7 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
     # CVaR constraints: u_s >= -R_s^T * w - t for all scenarios s
     for s in range(n_scenarios):
         cvar_constraint_expr = LinearExpression([], [], 0.0)
+        cvar_constraint_expr += u[s]  # u_s
         cvar_constraint_expr += t     # + t
 
         # Add portfolio return terms: + R_s^T * w
@@ -186,9 +195,10 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
         # Extract optimal solution
         optimal_weights = np.array([w[i].getValue() for i in range(n_assets)])
         t_value = t.getValue()
+        u_values = np.array([u[s].getValue() for s in range(n_scenarios)])
 
         # Calculate CVaR and expected return
-        cvar_value = t_value 
+        cvar_value = t_value + (1.0 / (1.0 - alpha)) * np.sum(scenario_probs * u_values)
         expected_return = np.dot(mu, optimal_weights)
         print(f"the VAR value is ****** {t_value}**************")
         return optimal_weights, cvar_value, expected_return, problem
@@ -246,7 +256,7 @@ try:
     print(f"Status: {solve_result.Status.name}")
     print(f"Objective value: {solve_result.ObjValue:.6f}")
     print(f"Expected annual return: {expected_return:.4f} ({expected_return*100:.2f}%)")
-    print(f"VaR (95%): {cvar_value:.4f}")
+    print(f"CVaR (95%): {cvar_value:.4f}")
     
 except Exception as e:
     print(f"Optimization failed: {e}")
@@ -277,56 +287,11 @@ for _, row in top_holdings.iterrows():
     print(f"{row['Asset']:>6}: {row['Weight']:>8.4f} ({row['Weight']*100:>6.2f}%) | Expected Return: {row['Expected_Return']:>8.4f}")
 
 
-# Visualize portfolio composition
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
-
-# Portfolio weights bar chart (top 20 holdings)
-top_20_holdings = significant_holdings.head(20)
-bars = ax1.bar(range(len(top_20_holdings)), top_20_holdings['Weight'])
-ax1.set_xlabel('Assets (Top 20 Holdings)')
-ax1.set_ylabel('Portfolio Weight')
-ax1.set_title(f'Optimal Portfolio Weights - Top 20 Holdings\n({len(selected_assets)} total assets, {len(significant_holdings)} with positive weights)')
-ax1.set_xticks(range(len(top_20_holdings)))
-ax1.set_xticklabels(top_20_holdings['Asset'], rotation=45, ha='right')
-ax1.grid(True, alpha=0.3)
-
-# Add value labels on bars for top holdings
-for i, bar in enumerate(bars):
-    height = bar.get_height()
-    if height > 0.01:  # Only label if weight > 1%
-        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.001,
-                f'{height:.3f}', ha='center', va='bottom', fontsize=8)
-
-# Portfolio weights pie chart (top 10 holdings)
-top_10_holdings = significant_holdings.head(10)
-other_weight = significant_holdings.iloc[10:]['Weight'].sum() if len(significant_holdings) > 10 else 0
-
-if other_weight > 0:
-    pie_data = list(top_10_holdings['Weight']) + [other_weight]
-    pie_labels = list(top_10_holdings['Asset']) + [f'Others ({len(significant_holdings)-10} assets)']
-else:
-    pie_data = top_10_holdings['Weight']
-    pie_labels = top_10_holdings['Asset']
-
-wedges, texts, autotexts = ax2.pie(pie_data, labels=pie_labels, autopct='%1.1f%%', 
-                                  startangle=90, textprops={'fontsize': 9})
-ax2.set_title('Portfolio Allocation - Top 10 Holdings + Others')
-
-# Improve pie chart readability
-for autotext in autotexts:
-    autotext.set_color('white')
-    autotext.set_fontweight('bold')
-
-plt.tight_layout()
-plt.show()
-
 # Additional statistics
 print(f"\nConcentration Analysis:")
 print(f"Herfindahl-Hirschman Index (HHI): {np.sum(optimal_weights**2):.6f}")
 print(f"Effective number of assets: {1/np.sum(optimal_weights**2):.2f}")
 print(f"Diversification ratio: {len(significant_holdings)}/{len(selected_assets)} = {len(significant_holdings)/len(selected_assets):.2%}")
-
-
 
 # Final summary statistics
 print("CVaR Portfolio Optimization Summary")
@@ -359,84 +324,3 @@ if 'optimal_weights' in locals():
 else:
     print("\nOptimization was not successful - please check the previous cells.")
 
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
-
-# Portfolio weights bar chart (top 20 holdings)
-top_20_holdings = significant_holdings.head(20)
-bars = ax1.bar(range(len(top_20_holdings)), top_20_holdings['Weight'])
-ax1.set_xlabel('Assets (Top 20 Holdings)')
-ax1.set_ylabel('Portfolio Weight')
-ax1.set_title(f'Optimal Portfolio Weights - Top 20 Holdings\n({len(selected_assets)} total assets, {len(significant_holdings)} with positive weights)')
-ax1.set_xticks(range(len(top_20_holdings)))
-ax1.set_xticklabels(top_20_holdings['Asset'], rotation=45, ha='right')
-ax1.grid(True, alpha=0.3)
-
-# Add value labels on bars for top holdings
-for i, bar in enumerate(bars):
-    height = bar.get_height()
-    if height > 0.01:  # Only label if weight > 1%
-        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.001,
-                f'{height:.3f}', ha='center', va='bottom', fontsize=8)
-
-# Portfolio weights pie chart (top 10 holdings)
-top_10_holdings = significant_holdings.head(10)
-other_weight = significant_holdings.iloc[10:]['Weight'].sum() if len(significant_holdings) > 10 else 0
-
-if other_weight > 0:
-    pie_data = list(top_10_holdings['Weight']) + [other_weight]
-    pie_labels = list(top_10_holdings['Asset']) + [f'Others ({len(significant_holdings)-10} assets)']
-else:
-    pie_data = top_10_holdings['Weight']
-    pie_labels = top_10_holdings['Asset']
-
-wedges, texts, autotexts = ax2.pie(pie_data, labels=pie_labels, autopct='%1.1f%%', 
-                                  startangle=90, textprops={'fontsize': 9})
-ax2.set_title('Portfolio Allocation - Top 10 Holdings + Others')
-
-# Improve pie chart readability
-for autotext in autotexts:
-    autotext.set_color('white')
-    autotext.set_fontweight('bold')
-
-plt.tight_layout()
-plt.show()
-
-# Additional statistics
-print(f"\nConcentration Analysis:")
-print(f"Herfindahl-Hirschman Index (HHI): {np.sum(optimal_weights**2):.6f}")
-print(f"Effective number of assets: {1/np.sum(optimal_weights**2):.2f}")
-print(f"Diversification ratio: {len(significant_holdings)}/{len(selected_assets)} = {len(significant_holdings)/len(selected_assets):.2%}")
-
-
-
-# Final summary statistics
-print("VaR Portfolio Optimization Summary")
-print("=" * 50)
-print(f"Dataset: S&P 500 stocks ({n_assets} assets)")
-print(f"Optimization method: CVaR with cuOpt GPU acceleration")
-print(f"Confidence level: {alpha*100}%")
-print(f"Risk aversion parameter: {lambda_risk}")
-print(f"Number of scenarios: {n_scenarios_total:,}")
-
-if 'optimal_weights' in locals():
-    portfolio_std = np.std(all_scenarios @ optimal_weights) * np.sqrt(252)
-    print(f"\nOptimal Portfolio Performance:")
-    print(f"- Expected annual return: {expected_return:.2%}")
-    print(f"- Annual volatility: {portfolio_std:.2%}")
-    print(f"- Sharpe ratio: {expected_return/portfolio_std:.3f}")
-    print(f"- VaR (95%): {cvar_value:.2%}")
-    print(f"- Number of assets with positive weights: {np.sum(optimal_weights > 0.001)}")
-
-    # Top 5 holdings
-    top_5 = portfolio_df.head(5)
-    print(f"\nTop 5 Holdings:")
-    for _, row in top_5.iterrows():
-        if row['Weight'] > 0.001:
-            print(f"- {row['Asset']}: {row['Weight']:.2%}")
-
-    print(f"\nComputational Performance:")
-    print(f"- Solver status: {solve_result.Status.name}")
-    print(f"- Objective value: {solve_result.ObjValue:.6f}")
-else:
-    print("\nOptimization was not successful - please check the previous cells.")

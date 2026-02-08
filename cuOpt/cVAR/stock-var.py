@@ -141,10 +141,6 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
     # CVaR auxiliary variables
     t = problem.addVariable(name="t", vtype=VType.CONTINUOUS,
                            lb=-float('inf'), ub=float('inf'))  # VaR variable
-    u = {}
-    for s in range(n_scenarios):
-        u[s] = problem.addVariable(name=f"u_{s}", vtype=VType.CONTINUOUS,
-                                  lb=0.0, ub=float('inf'))  # CVaR auxiliary
 
     # Objective: maximize expected return - lambda * CVaR
     # CVaR = t + (1/(1-alpha)) * sum(p_s * u_s)
@@ -158,10 +154,6 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
     # Subtract CVaR terms to penalize higher risk (lower CVaR increases objective value)
     if lambda_risk != 0:
         objective_expr -= t * lambda_risk
-        cvar_coeff = lambda_risk / (1.0 - alpha)
-        for s in range(n_scenarios):
-            if scenario_probs[s] != 0:
-                objective_expr -= u[s] * (cvar_coeff * scenario_probs[s])
 
     problem.setObjective(objective_expr, sense.MAXIMIZE)
 
@@ -175,16 +167,14 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
     # CVaR constraints: u_s >= -R_s^T * w - t for all scenarios s
     for s in range(n_scenarios):
         cvar_constraint_expr = LinearExpression([], [], 0.0)
-        cvar_constraint_expr += u[s]  # u_s
         cvar_constraint_expr += t     # + t
-        #cvar_constraint_expr += (1 - alpha)     # + t
 
         # Add portfolio return terms: + R_s^T * w
         for i in range(n_assets):
             if scenarios[s, i] != 0:
                 cvar_constraint_expr += w[i] * scenarios[s, i]
-
         problem.addConstraint(cvar_constraint_expr >= 0.0, name=f"cvar_{s}")
+    print(f"the contratint expression is ****{cvar_constraint_expr}****")
 
     # Solve the optimization problem
     if solver_settings is not None:
@@ -196,15 +186,12 @@ def solve_cvar_portfolio(scenarios, scenario_probs, mu, alpha=0.95, lambda_risk=
         # Extract optimal solution
         optimal_weights = np.array([w[i].getValue() for i in range(n_assets)])
         t_value = t.getValue()
-        print(f"t_value is {t_value}")
-        u_values = np.array([u[s].getValue() for s in range(n_scenarios)])
 
         # Calculate CVaR and expected return
-        cvar_value1 = t_value + (1.0 - alpha) * np.sum(scenario_probs * u_values)
-        cvar_value = t_value + (1.0 / (1.0 - alpha)) * np.sum(scenario_probs * u_values)
+        cvar_value = t_value 
         expected_return = np.dot(mu, optimal_weights)
-
-        return optimal_weights, cvar_value, expected_return, cvar_value1, problem
+        print(f"the VAR value is ****** {t_value}**************")
+        return optimal_weights, cvar_value, expected_return, problem
     else:
         raise RuntimeError(f"Optimization failed with status: {problem.Status.name}")
 
@@ -244,7 +231,7 @@ print(f"- Number of assets: {n_assets}")
 
 # Solve the optimization problem
 try:
-    optimal_weights, cvar_value, expected_return, cvar_value1, solve_result = solve_cvar_portfolio(
+    optimal_weights, cvar_value, expected_return, solve_result = solve_cvar_portfolio(
         scenarios=all_scenarios,
         scenario_probs=scenario_probs,
         mu=mu_annual,  # Use annualized returns
@@ -259,8 +246,7 @@ try:
     print(f"Status: {solve_result.Status.name}")
     print(f"Objective value: {solve_result.ObjValue:.6f}")
     print(f"Expected annual return: {expected_return:.4f} ({expected_return*100:.2f}%)")
-    print(f"CVaR (95%): {cvar_value:.4f}")
-    print(f"VaR (95%): {cvar_value1:.4f}")
+    print(f"VaR (95%): {cvar_value:.4f}")
     
 except Exception as e:
     print(f"Optimization failed: {e}")
@@ -276,10 +262,15 @@ portfolio_df = pd.DataFrame({
 # Sort by weight (descending)
 portfolio_df = portfolio_df.sort_values('Weight', ascending=False)
 
+print(f"Portolio is {portfolio_df}")
+print(f"total number of stocks selected is {len(portfolio_df)}")
+
 # Display portfolio composition (top holdings only)
 significant_holdings = portfolio_df[portfolio_df['Weight'] > 0.001]  # Only assets with weight > 0.1%
 top_holdings = significant_holdings.head(20)  # Show top 20 holdings
 
+
+print(f"Portfolio which is > 0.001 is {significant_holdings} and its total is {len(significant_holdings)}")
 print("Optimal Portfolio Composition (Top 20 Holdings):")
 print("=" * 70)
 for _, row in top_holdings.iterrows():
@@ -338,7 +329,7 @@ print(f"Diversification ratio: {len(significant_holdings)}/{len(selected_assets)
 
 
 # Final summary statistics
-print("CVaR Portfolio Optimization Summary")
+print("VaR Portfolio Optimization Summary")
 print("=" * 50)
 print(f"Dataset: S&P 500 stocks ({n_assets} assets)")
 print(f"Optimization method: CVaR with cuOpt GPU acceleration")
@@ -352,7 +343,7 @@ if 'optimal_weights' in locals():
     print(f"- Expected annual return: {expected_return:.2%}")
     print(f"- Annual volatility: {portfolio_std:.2%}")
     print(f"- Sharpe ratio: {expected_return/portfolio_std:.3f}")
-    print(f"- CVaR (95%): {cvar_value:.2%}")
+    print(f"- VaR (95%): {cvar_value:.2%}")
     print(f"- Number of assets with positive weights: {np.sum(optimal_weights > 0.001)}")
 
     # Top 5 holdings
@@ -367,6 +358,4 @@ if 'optimal_weights' in locals():
     print(f"- Objective value: {solve_result.ObjValue:.6f}")
 else:
     print("\nOptimization was not successful - please check the previous cells.")
-
-
 
