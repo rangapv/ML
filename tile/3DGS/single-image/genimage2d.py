@@ -33,7 +33,7 @@ class SimpleTrainer:
         self.H, self.W = gt_image.shape[0], gt_image.shape[1]
         self.focal = 0.5 * float(self.W) / math.tan(0.5 * fov_x)
         self.img_size = torch.tensor([self.W, self.H, 1], device=self.device)
-
+        self.sh_degree = 0
         self._init_gaussians()
 
     def _init_gaussians(self):
@@ -110,11 +110,13 @@ class SimpleTrainer:
 
             renders = rasterize_fnc(
                 self.means,
+                #self.quats,
                 self.quats / self.quats.norm(dim=-1, keepdim=True),
                 self.scales,
                 torch.sigmoid(self.opacities),
                 torch.sigmoid(self.rgbs),
                 self.viewmat[None],
+                self.sh_degree,
                 K[None],
                 self.W,
                 self.H,
