@@ -99,6 +99,11 @@ class SimpleTrainer:
             ],
             device=self.device,
         )
+        Ks = K.unsqueeze(0).unsqueeze(0)
+       # print("Ks type:", type(K))
+       # print("Ks shape:", K.shape) 
+       # K = K.unsqueeze(0).unsqueeze(0)
+       # print("Ks shape:", K.shape) 
 
         if model_type == "3dgs":
             rasterize_fnc = rasterization
@@ -117,7 +122,7 @@ class SimpleTrainer:
                 torch.sigmoid(self.rgbs),
                 self.viewmat[None],
                 self.sh_degree,
-                K[None],
+                Ks,
                 self.W,
                 self.H,
                 packed=False,
