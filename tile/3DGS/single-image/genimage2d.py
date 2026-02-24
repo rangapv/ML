@@ -44,7 +44,7 @@ class SimpleTrainer:
         self.scales = torch.rand(self.num_points, 3, device=self.device)
         d = 3
         self.rgbs = torch.rand(self.num_points, d, device=self.device)
-
+        self.colors = torch.rand(self.num_points, 3, device=self.device)
         u = torch.rand(self.num_points, 1, device=self.device)
         v = torch.rand(self.num_points, 1, device=self.device)
         w = torch.rand(self.num_points, 1, device=self.device)
@@ -99,11 +99,16 @@ class SimpleTrainer:
             ],
             device=self.device,
         )
-        Ks = K.unsqueeze(0).unsqueeze(0)
+        Ks = K
        # print("Ks type:", type(K))
        # print("Ks shape:", K.shape) 
-       # K = K.unsqueeze(0).unsqueeze(0)
-       # print("Ks shape:", K.shape) 
+        #Ks = Ks.unsqueeze(0)
+        batch_dims = self.means.shape[-2]
+        print("batch dims",batch_dims)
+        print("Ks shape:", Ks.shape) 
+        print("viewmats shape:", self.viewmat.shape) 
+        print("scales shape:", self.scales.shape) 
+        print("means shape:", self.means.shape) 
 
         if model_type == "3dgs":
             rasterize_fnc = rasterization
@@ -121,8 +126,9 @@ class SimpleTrainer:
                 torch.sigmoid(self.opacities),
                 torch.sigmoid(self.rgbs),
                 self.viewmat[None],
+                self.colors,
                 self.sh_degree,
-                Ks,
+                Ks[None],
                 self.W,
                 self.H,
                 packed=False,

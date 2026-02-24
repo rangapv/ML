@@ -170,7 +170,7 @@ def main(
     img_path: Optional[Path] = None,
     iterations: int = 1000,
     lr: float = 0.01,
-    model_type: Literal["3dgs", "2dgs"] = "2dgs",
+    model_type: Literal["3dgs", "2dgs"] = "3dgs",
 ) -> None:
     if img_path:
         gt_image = image_path_to_tensor(img_path)
