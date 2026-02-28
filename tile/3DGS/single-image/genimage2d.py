@@ -69,6 +69,11 @@ class SimpleTrainer:
             ],
             device=self.device,
         )
+        self.viewmats = self.viewmat
+        self.viewmat = self.viewmat.unsqueeze(0)
+        f = self.viewmat.unsqueeze(0)
+        print("viewmat is ",self.viewmat)
+        print("viewmat-f is ",f)
         self.background = torch.zeros(d, device=self.device)
 
         self.means.requires_grad = True
@@ -99,16 +104,27 @@ class SimpleTrainer:
             ],
             device=self.device,
         )
-        Ks = K
-       # print("Ks type:", type(K))
-       # print("Ks shape:", K.shape) 
-        #Ks = Ks.unsqueeze(0)
+        K = K.unsqueeze(0)
+        print("K type:", type(K))
+        print("Ks shape:", K.shape) 
         batch_dims = self.means.shape[-2]
         print("batch dims",batch_dims)
-        print("Ks shape:", Ks.shape) 
+        print("Ks shape:", K.shape) 
         print("viewmats shape:", self.viewmat.shape) 
         print("scales shape:", self.scales.shape) 
         print("means shape:", self.means.shape) 
+
+        N = self.means.shape[0]
+        C = self.viewmat.shape[0]
+        print("N is ",N)
+        print("C is ", C)
+        c1 = self.viewmat
+        print("new c1 is ", c1.shape)
+        c2 = c1.unsqueeze(0)
+        print("new c is ", c2.shape)
+        print("new c is ", self.viewmat.unsqueeze(0).unsqueeze(0))
+
+
 
         if model_type == "3dgs":
             rasterize_fnc = rasterization
@@ -125,10 +141,10 @@ class SimpleTrainer:
                 self.scales,
                 torch.sigmoid(self.opacities),
                 torch.sigmoid(self.rgbs),
-                self.viewmat[None],
+                self.viewmats.unsqueeze(0),
                 self.colors,
                 self.sh_degree,
-                Ks[None],
+                K[None],
                 self.W,
                 self.H,
                 packed=False,
