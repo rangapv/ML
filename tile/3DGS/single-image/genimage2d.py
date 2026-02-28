@@ -59,6 +59,15 @@ class SimpleTrainer:
             -1,
         )
         self.opacities = torch.ones((self.num_points), device=self.device)
+        self.K1 = torch.tensor(
+            [
+                [self.focal, 0, self.W / 2],
+                [0, self.focal, self.H / 2],
+                [0, 0, 1],
+            ],
+            device=self.device,
+        )
+
 
         self.viewmat = torch.tensor(
             [
@@ -70,9 +79,9 @@ class SimpleTrainer:
             device=self.device,
         )
         self.viewmats = self.viewmat
-        self.viewmat = self.viewmat.unsqueeze(0)
-        f = self.viewmat.unsqueeze(0)
         print("viewmat is ",self.viewmat)
+        self.viewmats = self.viewmat.unsqueeze(0)
+        f = self.viewmats
         print("viewmat-f is ",f)
         self.background = torch.zeros(d, device=self.device)
 
@@ -82,6 +91,8 @@ class SimpleTrainer:
         self.rgbs.requires_grad = True
         self.opacities.requires_grad = True
         self.viewmat.requires_grad = False
+        self.viewmats.requires_grad = False
+        self.K1.requires_grad = False
 
     def train(
         self,
@@ -104,26 +115,31 @@ class SimpleTrainer:
             ],
             device=self.device,
         )
+        Ks = K
         K = K.unsqueeze(0)
         print("K type:", type(K))
         print("Ks shape:", K.shape) 
+        print("Ks shape-0:", K.shape[0]) 
         batch_dims = self.means.shape[-2]
         print("batch dims",batch_dims)
         print("Ks shape:", K.shape) 
-        print("viewmats shape:", self.viewmat.shape) 
+        #print("viewmats shape:", self.viewmat.shape) 
         print("scales shape:", self.scales.shape) 
         print("means shape:", self.means.shape) 
 
         N = self.means.shape[0]
         C = self.viewmat.shape[0]
+        C1 = self.viewmats.shape[0]
         print("N is ",N)
         print("C is ", C)
-        c1 = self.viewmat
-        print("new c1 is ", c1.shape)
+        print("C1 is ", C1)
+        c1 = self.viewmat[None]
+        print("new c1 is viewmat", c1.shape)
+        print("new c1-shape is viewmat", c1.shape[0])
         c2 = c1.unsqueeze(0)
-        print("new c is ", c2.shape)
-        print("new c is ", self.viewmat.unsqueeze(0).unsqueeze(0))
-
+        print("new c is viewmat after squeeze", c2.shape)
+        print("new c is viewmat after squeeze", c2.shape[0])
+        print("new c is viewmat after squeeze twice", self.viewmat.unsqueeze(0).unsqueeze(0))
 
 
         if model_type == "3dgs":
@@ -141,10 +157,10 @@ class SimpleTrainer:
                 self.scales,
                 torch.sigmoid(self.opacities),
                 torch.sigmoid(self.rgbs),
-                self.viewmats.unsqueeze(0),
+                self.viewmat[None],
                 self.colors,
-                self.sh_degree,
-                K[None],
+                #self.sh_degree,
+                self.K1,
                 self.W,
                 self.H,
                 packed=False,
