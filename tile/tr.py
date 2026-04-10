@@ -49,3 +49,6 @@ def cutile_matmul(A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
     C = torch.empty((m, n), device=A.device, dtype=A.dtype)
     ct.launch(stream, grid, matmul_kernel, (A, B, C, tm, tn, tk))
     return C
+
+res1 = cutile_matmul
+print(f"result is {res1}")
