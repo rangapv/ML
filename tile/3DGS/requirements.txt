@@ -1,4 +1,7 @@
 tyro>=0.8.8
 nerfstudio
 nerfview
+<<<<<<< HEAD
 packaging<=21.3
+=======
+>>>>>>> 1b0cc2a04b640dd72048d3e9bc80bad8799c9fde
