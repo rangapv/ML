@@ -9,12 +9,12 @@ fix1(){
 lavatmp="lava-temp1"
 cm1=`mkdir $lavatmp`
 cm2=`cd $lavatmp;git init;git clone https://github.com/haotian-liu/LLaVA.git`
-cm3=`pip3 install --upgrade torch --index-url https://download.pytorch.org/whl/nightly/cu132`
 cm4=`cd $lavatmp/LLaVA;pip3 install --upgrade pip`
 cm5=`cd $lavatmp/LLaVA;pip3 install -e .`
 cm6=`cd $lavatmp/LLaVA;pip3 install -e ".[train]"`
-cm7=`cd $lavatmp/LLaVA;pip3 install flash-attn --no-build-isolation`
-
+cm7=`pip3 install --upgrade torch==2.11.0`
+cm8=`pip3 install --upgrade torch --index-url https://download.pytorch.org/whl/nightly/cu132`
+cm7=`cd $lavatmp/LLaVA;MAX_JOBS=4 pip3 install flash-attn --no-build-isolation --no-cache-dir`
 
 }
 
