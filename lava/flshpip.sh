@@ -33,6 +33,8 @@ chk4=`hf download liuhaotian/llava-v1.5-mlp2x-336px-pretrain-vicuna-7b-v1.5 --lo
 
 chk5=`hf download lmsys/vicuna-7b-v1.5 --local-dir ./checkpoints/vicuna-7b-v1.5 --local-dir ./$lavatmp/LLaVA/checkpoints/ `
 
+chk5=`cd ./playground/data; wget https://huggingface.co/datasets/liuhaotian/LLaVA-Pretrain/resolve/main/blip_laion_cc_sbu_558k.json`
+
 }
 
 chkpt_dwn
