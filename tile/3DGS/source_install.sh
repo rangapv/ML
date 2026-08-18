@@ -14,16 +14,12 @@ wi4=`wget https://s3.us-east-2.amazonaws.com/gsplat-1.5.3/gsplat-1.5.3-cp310-cp3
 
 wi5=`pip3 install ./gsplat-1.5.3-cp310-cp310-linux_x86_64.whl`
 
-
-
 wi5=`pip3 install nerfview`
-
 
 }
 
 
 system_ins() {
-
 
 si1=`sudo apt install unzip`
 
@@ -33,7 +29,7 @@ si3=`mkdir ~/sample1;cd ~/sample1;git init;git pull https://github.com/nerfstudi
 
 #TEST:
 
-si4=`python3 -c "import gsplat; print(gsplat.__file__); from gsplat import color_correct; print('ok')"`
+si4=`cd ~/sample1;python3 -c "import gsplat; print(gsplat.__file__); from gsplat import color_correct; print('ok')"`
 si4s="$?"
 
 if ( "$si4s" == "0" )
