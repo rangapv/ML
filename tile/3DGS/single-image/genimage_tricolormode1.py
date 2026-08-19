@@ -139,10 +139,18 @@ class SimpleTrainer:
             )
             #)[0]
             info = renders[2]
+            if iter == 1:
+               print(f'The output of rasterization is {renders}, its length is {len(renders)}')
+               print(f'the output of renders[0] is {renders[0]}')
+               print(f'the output of renders[1] is {renders[1]}')
+               print(f'the output of renders[2] is {renders[2]}')
+               print(f'the output of renders[0][0] is {renders[0][0]}')
+            #print(f'the output of renders[4] is {renders[4]}')
             # Pre-backward step
             self.strategy.step_pre_backward(self.params, self.optimizer, self.strategy_state, iter, info)
 
-            out_img = renders[0]
+            out_img = renders[0][0]
+            #out_img = renders[0]
             torch.cuda.synchronize()
             times[0] += time.time() - start
             loss = mse_loss(out_img, self.gt_image)
@@ -154,7 +162,7 @@ class SimpleTrainer:
 
             torch.cuda.synchronize()
             times[1] += time.time() - start
-            #self.optimizer.iter()
+            #self.optimizer.step()
             print(f"Iteration {iter + 1}/{iterations}, Loss: {loss.item()}")
 
             if save_imgs and iter % 5 == 0:
