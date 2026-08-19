@@ -79,14 +79,14 @@ class SimpleTrainer:
         self.viewmat.requires_grad = False
         self.strategy = DefaultStrategy()
         
-        params = [self.rgbs, self.means, self.scales, self.opacities, self.quats]
+        self.params = torch.nn.ParameterDict({self.rgbs, self.means, self.scales, self.opacities, self.quats})
         lr: float = 0.01
         optimizer = optim.Adam(
             [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
         )
 
         # Check the sanity of the parameters and optimizers
-        self.strategy.check_sanity(params, optimizer)
+        self.strategy.check_sanity(self.params, optimizer)
 
         # Initialize the strategy state
         self.strategy_state = strategy.initialize_state()

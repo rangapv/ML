@@ -32,14 +32,14 @@ si3=`mkdir ~/sample1;cd ~/sample1;git init;git pull https://github.com/nerfstudi
 si4=`cd ~/sample1;python3 -c "import gsplat; print(gsplat.__file__); from gsplat import color_correct; print('ok')"`
 si4s="$?"
 
-if ( "$si4s" == "0" )
+if [[ "$si4s" == "0" ]] 
 then
 si5=`cd ~/sample1/examples; python3 datasets/download_dataset.py`
 si5s="$?"
 si6p=`sed -i "s|python|python3|g" ~/sample1/examples/benchmarks/basic.sh`
 si5=`cd ~/sample1/examples;bash benchmarks/basic.sh`
 else
-	echo "gsplat missing utlities libraary..hint do a recursive PUll and try again"
+	echo "gsplat missing utlities library..hint do a recursive PUll and try again"
 fi
 
 }
