@@ -155,6 +155,8 @@ class SimpleTrainer:
             times[0] += time.time() - start
             loss = mse_loss(out_img, self.gt_image)
             #self.optimizer.zero_grad()
+            for opt in self.optimizer.values():
+                opt.zero_grad()
             start = time.time()
             loss.backward()
  
@@ -163,6 +165,8 @@ class SimpleTrainer:
             torch.cuda.synchronize()
             times[1] += time.time() - start
             #self.optimizer.step()
+            for opt in self.optimizer.values():
+                opt.step()
             print(f"Iteration {iter + 1}/{iterations}, Loss: {loss.item()}")
 
             if save_imgs and iter % 5 == 0:
