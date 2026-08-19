@@ -41,6 +41,8 @@ class SimpleTrainer:
         bd = 2
 
         self.means = bd * (torch.rand(self.num_points, 3, device=self.device) - 0.5)
+        #colors = torch.rand((100, 3), device=device)
+        self.colors = torch.rand(self.num_points, 3, device=self.device)
         self.scales = torch.rand(self.num_points, 3, device=self.device)
         d = 3
         self.rgbs = torch.rand(self.num_points, d, device=self.device)
@@ -72,24 +74,28 @@ class SimpleTrainer:
         self.background = torch.zeros(d, device=self.device)
 
         self.means.requires_grad = True
+        self.colors.requires_grad = True
         self.scales.requires_grad = True
         self.quats.requires_grad = True
         self.rgbs.requires_grad = True
         self.opacities.requires_grad = True
         self.viewmat.requires_grad = False
-        self.strategy = DefaultStrategy()
         
-        self.params = torch.nn.ParameterDict({self.rgbs, self.means, self.scales, self.opacities, self.quats})
+        self.params = torch.nn.ParameterDict({"means": self.means, "scales": self.scales, "opacities": self.opacities, "quats": self.quats,"colors": self.colors})
         lr: float = 0.01
-        optimizer = optim.Adam(
-            [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
-        )
+        #optimizer = optim.Adam(
+        #    [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
+        #)
 
+        self.optimizer = {k: torch.optim.Adam([p], lr=lr) for k, p in self.params.items()}
+
+
+        self.strategy = DefaultStrategy()
         # Check the sanity of the parameters and optimizers
-        self.strategy.check_sanity(self.params, optimizer)
+        self.strategy.check_sanity(self.params, self.optimizer)
 
         # Initialize the strategy state
-        self.strategy_state = strategy.initialize_state()
+        self.strategy_state = self.strategy.initialize_state()
 
 
     def train(
@@ -131,9 +137,9 @@ class SimpleTrainer:
                 self.H,
                 packed=False,
             )[0]
-
+            info = renders[0]
             # Pre-backward step
-            strategy.step_pre_backward(params, optimizer, strategy_state, iter, info)
+            self.strategy.step_pre_backward(self.params, self.optimizer, self.strategy_state, iter, info)
 
             out_img = renders[0]
             torch.cuda.synchronize()
@@ -143,7 +149,7 @@ class SimpleTrainer:
             start = time.time()
             loss.backward()
  
-            strategy.step_post_backward(params, optimizer, strategy_state, iter, info)
+            self.strategy.step_post_backward(self.params, self.optimizer, self.strategy_state, iter, info)
 
             torch.cuda.synchronize()
             times[1] += time.time() - start
