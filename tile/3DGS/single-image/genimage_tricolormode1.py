@@ -80,9 +80,13 @@ class SimpleTrainer:
         self.strategy = DefaultStrategy()
         
         params = [self.rgbs, self.means, self.scales, self.opacities, self.quats]
+        lr: float = 0.01
+        optimizer = optim.Adam(
+            [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
+        )
 
         # Check the sanity of the parameters and optimizers
-        self.strategy.check_sanity(params, optimizers)
+        self.strategy.check_sanity(params, optimizer)
 
         # Initialize the strategy state
         self.strategy_state = strategy.initialize_state()
@@ -95,9 +99,6 @@ class SimpleTrainer:
         save_imgs: bool = False,
         model_type: Literal["3dgs", "2dgs"] = "3dgs",
     ):
-        optimizer = optim.Adam(
-            [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
-        )
         mse_loss = torch.nn.MSELoss()
         frames = []
         times = [0] * 2  # rasterization, backward
@@ -132,7 +133,7 @@ class SimpleTrainer:
             )[0]
 
             # Pre-backward step
-            strategy.step_pre_backward(params, optimizers, strategy_state, iter, info)
+            strategy.step_pre_backward(params, optimizer, strategy_state, iter, info)
 
             out_img = renders[0]
             torch.cuda.synchronize()
@@ -142,7 +143,7 @@ class SimpleTrainer:
             start = time.time()
             loss.backward()
  
-            strategy.step_post_backward(params, optimizers, strategy_state, iter, info)
+            strategy.step_post_backward(params, optimizer, strategy_state, iter, info)
 
             torch.cuda.synchronize()
             times[1] += time.time() - start
