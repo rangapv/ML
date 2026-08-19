@@ -136,8 +136,9 @@ class SimpleTrainer:
                 self.W,
                 self.H,
                 packed=False,
-            )[0]
-            info = renders[0]
+            )
+            #)[0]
+            info = renders[2]
             # Pre-backward step
             self.strategy.step_pre_backward(self.params, self.optimizer, self.strategy_state, iter, info)
 
@@ -145,7 +146,7 @@ class SimpleTrainer:
             torch.cuda.synchronize()
             times[0] += time.time() - start
             loss = mse_loss(out_img, self.gt_image)
-            optimizer.zero_grad()
+            #self.optimizer.zero_grad()
             start = time.time()
             loss.backward()
  
@@ -153,7 +154,7 @@ class SimpleTrainer:
 
             torch.cuda.synchronize()
             times[1] += time.time() - start
-            optimizer.step()
+            #self.optimizer.iter()
             print(f"Iteration {iter + 1}/{iterations}, Loss: {loss.item()}")
 
             if save_imgs and iter % 5 == 0:
