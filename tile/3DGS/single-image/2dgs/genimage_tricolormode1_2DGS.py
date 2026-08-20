@@ -119,10 +119,10 @@ class SimpleTrainer:
 
         if model_type == "3dgs":
             rasterize_fnc = rasterization
-            print(f'This is 3dgs Rasterization')
+            print(f'This is 3dgs Rasterization') 
         elif model_type == "2dgs":
             rasterize_fnc = rasterization_2dgs
-            print(f'This is 2dgs Rasterization')
+            print(f'This is 2dgs Rasterization') 
 
         for iter in range(iterations):
             start = time.time()
@@ -134,7 +134,7 @@ class SimpleTrainer:
                 #colors=self.colors,
                 opacities=torch.sigmoid(self.opacities),
                 colors=torch.sigmoid(self.rgbs)[None],
-                #uncomment the bottom two line for 3dgs and commnet the above two
+                #uncomment the bottom two line for 3dgs and comment the above two
                 #opacities=torch.sigmoid(self.opacities),
                 #colors=torch.sigmoid(self.rgbs),
                 #self.viewmat,

@@ -119,10 +119,10 @@ class SimpleTrainer:
 
         if model_type == "3dgs":
             rasterize_fnc = rasterization
-            print(f'This is 3dgs Rasterization')
+            print(f'This is 3dgs Rasterization') 
         elif model_type == "2dgs":
             rasterize_fnc = rasterization_2dgs
-            print(f'This is 2dgs Rasterization')
+            print(f'This is 2dgs Rasterization') 
 
         for iter in range(iterations):
             start = time.time()
@@ -133,10 +133,10 @@ class SimpleTrainer:
                 scales=self.scales,
                 #colors=self.colors,
                 opacities=torch.sigmoid(self.opacities),
-                colors=torch.sigmoid(self.rgbs)[None],
+                #colors=torch.sigmoid(self.rgbs)[None],
                 #uncomment the bottom two line for 3dgs and commnet the above two
                 #opacities=torch.sigmoid(self.opacities),
-                #colors=torch.sigmoid(self.rgbs),
+                colors=torch.sigmoid(self.rgbs),
                 #self.viewmat,
                 viewmats=self.viewmat[None],
                 Ks=K[None],
@@ -217,7 +217,7 @@ def main(
     img_path: Optional[Path] = None,
     iterations: int = 1000,
     lr: float = 0.01,
-    model_type: Literal["3dgs", "2dgs"] = "2dgs",
+    model_type: Literal["3dgs", "2dgs"] = "3dgs",
 ) -> None:
     if img_path:
         gt_image = image_path_to_tensor(img_path)

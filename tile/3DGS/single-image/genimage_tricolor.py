@@ -102,8 +102,10 @@ class SimpleTrainer:
 
         if model_type == "3dgs":
             rasterize_fnc = rasterization
+            print(f'this is a 3dgs rasterixzation')
         elif model_type == "2dgs":
             rasterize_fnc = rasterization_2dgs
+            print(f'this is a 2dgs rasterization')
 
         for iter in range(iterations):
             start = time.time()
@@ -170,7 +172,7 @@ def main(
     img_path: Optional[Path] = None,
     iterations: int = 1000,
     lr: float = 0.01,
-    model_type: Literal["3dgs", "2dgs"] = "3dgs",
+    model_type: Literal["3dgs", "2dgs"] = "2dgs",
 ) -> None:
     if img_path:
         gt_image = image_path_to_tensor(img_path)
