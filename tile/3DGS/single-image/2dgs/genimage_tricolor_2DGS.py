@@ -15,7 +15,7 @@ from PIL import Image
 from torch import Tensor, optim
 
 from gsplat import rasterization, rasterization_2dgs
-
+#from gsplat import DefaultStrategy
 
 class SimpleTrainer:
     """Trains random gaussians to fit an image."""
@@ -41,6 +41,8 @@ class SimpleTrainer:
         bd = 2
 
         self.means = bd * (torch.rand(self.num_points, 3, device=self.device) - 0.5)
+        #colors = torch.rand((100, 3), device=device)
+        self.colors = torch.rand(self.num_points, 3, device=self.device)
         self.scales = torch.rand(self.num_points, 3, device=self.device)
         d = 3
         self.rgbs = torch.rand(self.num_points, d, device=self.device)
@@ -72,11 +74,29 @@ class SimpleTrainer:
         self.background = torch.zeros(d, device=self.device)
 
         self.means.requires_grad = True
+        self.colors.requires_grad = True
         self.scales.requires_grad = True
         self.quats.requires_grad = True
         self.rgbs.requires_grad = True
         self.opacities.requires_grad = True
         self.viewmat.requires_grad = False
+        
+        self.params = torch.nn.ParameterDict({"means": self.means, "scales": self.scales, "opacities": self.opacities, "quats": self.quats,"colors": self.colors})
+        lr: float = 0.01
+        #optimizer = optim.Adam(
+        #    [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
+        #)
+
+        self.optimizer = {k: torch.optim.Adam([p], lr=lr) for k, p in self.params.items()}
+        print(f'optim is {dir(self.optimizer)}')
+
+       # self.strategy = DefaultStrategy()
+        # Check the sanity of the parameters and optimizers
+       # self.strategy.check_sanity(self.params, self.optimizer)
+
+        # Initialize the strategy state
+        #self.strategy_state = self.strategy.initialize_state()
+
 
     def train(
         self,
@@ -85,9 +105,6 @@ class SimpleTrainer:
         save_imgs: bool = False,
         model_type: Literal["3dgs", "2dgs"] = "3dgs",
     ):
-        optimizer = optim.Adam(
-            [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
-        )
         mse_loss = torch.nn.MSELoss()
         frames = []
         times = [0] * 2  # rasterization, backward
@@ -102,36 +119,64 @@ class SimpleTrainer:
 
         if model_type == "3dgs":
             rasterize_fnc = rasterization
-            print(f'this is a 3dgs rasterixzation')
+            print(f'This is 3dgs Rasterization') 
         elif model_type == "2dgs":
             rasterize_fnc = rasterization_2dgs
-            print(f'this is a 2dgs rasterization')
+            print(f'This is 2dgs Rasterization') 
 
         for iter in range(iterations):
             start = time.time()
 
             renders = rasterize_fnc(
-                self.means,
-                self.quats / self.quats.norm(dim=-1, keepdim=True),
-                self.scales,
-                torch.sigmoid(self.opacities),
-                torch.sigmoid(self.rgbs),
-                self.viewmat[None],
-                K[None],
-                self.W,
-                self.H,
+                means=self.means,
+                quats=self.quats / self.quats.norm(dim=-1, keepdim=True),
+                scales=self.scales,
+                #colors=self.colors,
+                opacities=torch.sigmoid(self.opacities),
+                colors=torch.sigmoid(self.rgbs)[None],
+                #uncomment the bottom two line for 3dgs and comment the above two
+                #opacities=torch.sigmoid(self.opacities),
+                #colors=torch.sigmoid(self.rgbs),
+                #self.viewmat,
+                viewmats=self.viewmat[None],
+                Ks=K[None],
+                width=self.W,
+                height=self.H,
                 packed=False,
-            )[0]
-            out_img = renders[0]
+            )
+            #)[0]
+            #for Rasterization 3dgs
+           # info = renders[2]
+            #for Rasterization 2dgs:
+            info = renders[-1]
+            if iter == -1:
+               print(f'The output of rasterization is {renders}, its length is {len(renders)}')
+               print(f'the output of renders[0] is {renders[0]}')
+               print(f'the output of renders[1] is {renders[1]}')
+               print(f'the output of renders[2] is {renders[2]}')
+               print(f'the output of renders[0][0] is {renders[0][0]}')
+            #print(f'the output of renders[4] is {renders[4]}')
+            # Pre-backward step
+            #self.strategy.step_pre_backward(self.params, self.optimizer, self.strategy_state, iter, info)
+
+            out_img = renders[0][0]
+            #out_img = renders[0]
             torch.cuda.synchronize()
             times[0] += time.time() - start
             loss = mse_loss(out_img, self.gt_image)
-            optimizer.zero_grad()
+            #optimizer.zero_grad()
+            for opt in self.optimizer.values():
+                opt.zero_grad()
             start = time.time()
             loss.backward()
+ 
+            #self.strategy.step_post_backward(self.params, self.optimizer, self.strategy_state, iter, info)
+
             torch.cuda.synchronize()
             times[1] += time.time() - start
-            optimizer.step()
+            #optimizer.step()
+            for opt in self.optimizer.values():
+                opt.step()
             print(f"Iteration {iter + 1}/{iterations}, Loss: {loss.item()}")
 
             if save_imgs and iter % 5 == 0:
@@ -172,7 +217,7 @@ def main(
     img_path: Optional[Path] = None,
     iterations: int = 1000,
     lr: float = 0.01,
-    model_type: Literal["3dgs", "2dgs"] = "3dgs",
+    model_type: Literal["3dgs", "2dgs"] = "2dgs",
 ) -> None:
     if img_path:
         gt_image = image_path_to_tensor(img_path)
