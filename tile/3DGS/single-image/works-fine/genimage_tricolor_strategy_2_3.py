@@ -130,18 +130,12 @@ class SimpleTrainer:
 
         for iter in range(iterations):
             start = time.time()
-
             renders = rasterize_fnc(
-                means=self.means,
-                quats=self.quats / self.quats.norm(dim=-1, keepdim=True),
-                scales=self.scales,
-                #colors=self.colors,
-                opacities=torch.sigmoid(self.opacities),
-                #colors=torch.sigmoid(self.rgbs)[None],
-                #uncomment the bottom two line for 3dgs and commnet the above two
-                #opacities=torch.sigmoid(self.opacities),
-                colors=torch.sigmoid(self.rgbs)[None],
-                #self.viewmat,
+                means=self.params["means"],
+                quats=self.params["quats"] / self.params["quats"].norm(dim=-1, keepdim=True),
+                scales=self.params["scales"],
+                opacities=torch.sigmoid(self.params["opacities"]),
+                colors=torch.sigmoid(self.params["colors"])[None],
                 viewmats=self.viewmat[None],
                 Ks=K[None],
                 width=self.W,
