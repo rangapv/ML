@@ -48,7 +48,7 @@ class SimpleTrainer:
 
         self.means = bd * (torch.rand(self.num_points, 3, device=self.device) - 0.5)
         #colors = torch.rand((100, 3), device=device)
-        self.colors = torch.rand(self.num_points, 3, device=self.device)
+        #self.colors = torch.rand(self.num_points, 3, device=self.device)
         self.scales = torch.rand(self.num_points, 3, device=self.device)
         d = 3
         self.rgbs = torch.rand(self.num_points, d, device=self.device)
@@ -80,21 +80,19 @@ class SimpleTrainer:
         self.background = torch.zeros(d, device=self.device)
 
         self.means.requires_grad = True
-        self.colors.requires_grad = True
+        #self.colors.requires_grad = True
         self.scales.requires_grad = True
         self.quats.requires_grad = True
         self.rgbs.requires_grad = True
         self.opacities.requires_grad = True
         self.viewmat.requires_grad = False
         
-        self.params = torch.nn.ParameterDict({"means": self.means, "scales": self.scales, "opacities": self.opacities, "quats": self.quats,"colors": self.colors})
+        self.params = torch.nn.ParameterDict({"means": self.means, "scales": self.scales, "opacities": self.opacities, "quats": self.quats,"colors": self.rgbs})
         lr: float = 0.01
         #optimizer = optim.Adam(
         #    [self.rgbs, self.means, self.scales, self.opacities, self.quats], lr
         #)
-
         self.optimizer = {k: torch.optim.Adam([p], lr=lr) for k, p in self.params.items()}
-
 
         self.strategy = DefaultStrategy()
         # Check the sanity of the parameters and optimizers
