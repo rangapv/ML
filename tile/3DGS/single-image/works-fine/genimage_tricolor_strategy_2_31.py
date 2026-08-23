@@ -84,8 +84,7 @@ class SimpleTrainer:
         self.params["colors"].requires_grad = True
         self.params["scales"].requires_grad = True
         self.params["quats"].requires_grad = True
-        #self.rgbs.requires_grad = True
-        self.opacities.requires_grad = True
+        self.params["opacities"].requires_grad = True
         self.viewmat.requires_grad = False
         
         lr: float = 0.01
@@ -130,7 +129,7 @@ class SimpleTrainer:
                 means=self.params["means"],
                 quats=self.params["quats"] / self.params["quats"].norm(dim=-1, keepdim=True),
                 scales=self.params["scales"],
-                opacities=torch.sigmoid(self.opacities),
+                opacities=torch.sigmoid(self.params["opacities"]),
                 colors=torch.sigmoid(self.params["colors"])[None],
                 viewmats=self.viewmat[None],
                 Ks=K[None],
@@ -145,21 +144,25 @@ class SimpleTrainer:
                print(f'the output of renders[1] is {renders[1]}')
                print(f'the output of renders[2] is {renders[2]}')
                print(f'the output of renders[0][0] is {renders[0][0]}')
+
             self.strategy.step_pre_backward(self.params, self.optimizer, self.strategy_state, iter, info)
 
             out_img = renders[0][0]
             torch.cuda.synchronize()
             times[0] += time.time() - start
             loss = mse_loss(out_img, self.gt_image)
+           
             for opt in self.optimizer.values():
                 opt.zero_grad()
             start = time.time()
+          
             loss.backward()
  
             self.strategy.step_post_backward(self.params, self.optimizer, self.strategy_state, iter, info)
 
             torch.cuda.synchronize()
             times[1] += time.time() - start
+
             for opt in self.optimizer.values():
                 opt.step()
             print(f"Iteration {iter + 1}/{iterations}, Loss: {loss.item()}")
