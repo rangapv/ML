@@ -43,27 +43,30 @@ class SimpleTrainer:
     def _init_gaussians(self):
         """Random gaussians"""
         bd = 2
-
-        self.means = bd * (torch.rand(self.num_points, 3, device=self.device) - 0.5)
-        #colors = torch.rand((100, 3), device=device)
-        self.colors = torch.rand(self.num_points, 3, device=self.device)
-        self.scales = torch.rand(self.num_points, 3, device=self.device)
         d = 3
-        #self.rgbs = torch.rand(self.num_points, d, device=self.device)
 
         u = torch.rand(self.num_points, 1, device=self.device)
         v = torch.rand(self.num_points, 1, device=self.device)
         w = torch.rand(self.num_points, 1, device=self.device)
 
-        self.quats = torch.cat(
-            [
-                torch.sqrt(1.0 - u) * torch.sin(2.0 * math.pi * v),
-                torch.sqrt(1.0 - u) * torch.cos(2.0 * math.pi * v),
-                torch.sqrt(u) * torch.sin(2.0 * math.pi * w),
-                torch.sqrt(u) * torch.cos(2.0 * math.pi * w),
-            ],
-            -1,
-        )
+        quats = torch.cat(
+         [
+            torch.sqrt(1.0 - u) * torch.sin(2.0 * math.pi * v),
+            torch.sqrt(1.0 - u) * torch.cos(2.0 * math.pi * v),
+            torch.sqrt(u) * torch.sin(2.0 * math.pi * w),
+            torch.sqrt(u) * torch.cos(2.0 * math.pi * w),
+         ],
+        -1,
+        )  
+
+        self.params = torch.nn.ParameterDict({
+            "means": torch.nn.Parameter(bd * (torch.rand(self.num_points, 3, device=self.device) - 0.5)),
+            "scales": torch.nn.Parameter(torch.rand(self.num_points, 3, device=self.device)),
+            "opacities": torch.nn.Parameter(torch.ones(self.num_points, device=self.device)),
+            "quats": torch.nn.Parameter(quats),
+            "colors": torch.nn.Parameter(torch.rand(self.num_points, 3, device=self.device)),
+        })
+
         self.opacities = torch.ones((self.num_points), device=self.device)
 
         self.viewmat = torch.tensor(
@@ -77,15 +80,14 @@ class SimpleTrainer:
         )
         self.background = torch.zeros(d, device=self.device)
 
-        self.means.requires_grad = True
-        self.colors.requires_grad = True
-        self.scales.requires_grad = True
-        self.quats.requires_grad = True
+        self.params["means"].requires_grad = True
+        self.params["colors"].requires_grad = True
+        self.params["scales"].requires_grad = True
+        self.params["quats"].requires_grad = True
         #self.rgbs.requires_grad = True
         self.opacities.requires_grad = True
         self.viewmat.requires_grad = False
         
-        self.params = torch.nn.ParameterDict({"means": self.means, "scales": self.scales, "opacities": self.opacities, "quats": self.quats,"colors": self.colors})
         lr: float = 0.01
         self.optimizer = {k: torch.optim.Adam([p], lr=lr) for k, p in self.params.items()}
 
@@ -125,11 +127,11 @@ class SimpleTrainer:
         for iter in range(iterations):
             start = time.time()
             renders = rasterize_fnc(
-                means=self.means,
-                quats=self.quats / self.quats.norm(dim=-1, keepdim=True),
-                scales=self.scales,
+                means=self.params["means"],
+                quats=self.params["quats"] / self.params["quats"].norm(dim=-1, keepdim=True),
+                scales=self.params["scales"],
                 opacities=torch.sigmoid(self.opacities),
-                colors=torch.sigmoid(self.colors)[None],
+                colors=torch.sigmoid(self.params["colors"])[None],
                 viewmats=self.viewmat[None],
                 Ks=K[None],
                 width=self.W,
