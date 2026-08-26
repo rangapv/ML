@@ -10,7 +10,7 @@ gi2=`pip3 install torch torchvision torchaudio --index-url https://download.pyto
 gi3=`pip3 install plyfile opencv-python`
 
 si1=`sudo apt install gcc-11 g++-11`
-si2=`sudo ln -sf /usr/bin/gcc ./gcc-11`
+si2=`sudo ln -sf /usr/bin/gcc /usr/bin/gcc-11`
 si123=`sudo apt install unzip`
 
 si3=`export NVCC_FLAGS="-allow-unsupported-compiler"`
