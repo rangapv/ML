@@ -7,6 +7,7 @@
 #also the Orignal Imgae construct as well as the Rasterized Image of the output
 
 import torch
+import math
 from torch import Tensor, optim
 from diff_gaussian_rasterization import GaussianRasterizationSettings, GaussianRasterizer
 from PIL import Image
@@ -36,17 +37,39 @@ class Diffgaus:
     self.rotations.requires_grad_(True)
 
 
-# 3. Set up camera matrices (Dummy 4x4 identities for example)
+
+    fovx = 2 * math.atan(0.5)
+    fovy = 2 * math.atan(0.5)
+
     self.viewmatrix = torch.eye(4, device="cuda")
-    self.projmatrix = torch.eye(4, device="cuda")
-    self.cam_pos = torch.zeros(3, device="cuda")
+    self.viewmatrix[2, 3] = 3.0  # move camera back
+    self.viewmatrix = self.viewmatrix.transpose(0, 1).contiguous()
+
+    self.projmatrix = self._getProjectionMatrix(0.01, 100.0, fovx, fovy).cuda()
+    self.projmatrix = self.projmatrix.transpose(0, 1).contiguous()
+    self.projmatrix = self.viewmatrix.unsqueeze(0).bmm(self.projmatrix.unsqueeze(0)).squeeze(0)
+
+    self.cam_pos = torch.tensor([0.0, 0.0, -3.0], device="cuda")
+
     self._tensorinit()
+
+# 3. Set up camera matrices (Dummy 4x4 identities for example)
+   def _getProjectionMatrix(self,znear, zfar, fovX, fovY):
+    tanHalfFovY = math.tan(fovY / 2)
+    tanHalfFovX = math.tan(fovX / 2)
+    P = torch.zeros(4, 4)
+    P[0, 0] = 1 / tanHalfFovX
+    P[1, 1] = 1 / tanHalfFovY
+    P[3, 2] = 1.0
+    P[2, 2] = zfar / (zfar - znear)
+    P[2, 3] = -(zfar * znear) / (zfar - znear)
+    return P
 
    def _tensorinit(self):
        
     num_iters = 500
-    switch_point = num_iters // 2  # first half trains toward normal tricolor, second half toward reversed
-    self.gt_image1 = self.gt_image.permute(2, 1, 0).contiguous()
+#    switch_point = num_iters // 2  # first half trains toward normal tricolor, second half toward reversed
+    self.gt_image1 = self.gt_image.permute(2, 0, 1).contiguous()
     optimizer = torch.optim.Adam(
      [self.means3D, self.shs, self.opacity, self.scales, self.rotations],
      lr=0.01,
@@ -114,7 +137,7 @@ class Diffgaus:
 def main():
     height = 600 
     width = 800 
-    gt_image = torch.ones((width, height,3)) * 1.0
+    gt_image = torch.ones((height,width,3)) * 1.0
         # make top left and bottom right red, blue
         # top third: red
     gt_image[: height // 3, :, :] = torch.tensor([1.0, 0.0, 0.0])
