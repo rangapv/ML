@@ -1,0 +1,6 @@
+uv
+hydra-core 
+rich
+torch
+numpy
+addict
