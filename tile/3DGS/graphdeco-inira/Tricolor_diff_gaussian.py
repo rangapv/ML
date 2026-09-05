@@ -58,9 +58,9 @@ class Diffgaus:
     tanHalfFovY = math.tan(fovY / 2)
     tanHalfFovX = math.tan(fovX / 2)
     P = torch.zeros(4, 4)
-    P[0, 0] = -1 / tanHalfFovX
+    P[0, 0] = 1 / tanHalfFovX
     P[1, 1] = 1 / tanHalfFovY
-    P[3, 2] = -1.0
+    P[3, 2] = 1.0
     P[2, 2] = zfar / (zfar - znear)
     P[2, 3] = -(zfar * znear) / (zfar - znear)
     return P
