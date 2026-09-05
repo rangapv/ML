@@ -52,18 +52,24 @@ class Diffgaus:
     self.cam_pos = torch.tensor([0.0, 0.0, -3.0], device="cuda")
 
     self._tensorinit()
-
-# 3. Set up camera matrices (Dummy 4x4 identities for example)
-   def _getProjectionMatrix(self,znear, zfar, fovX, fovY):
+   def _getProjectionMatrix(self, znear, zfar, fovX, fovY):
     tanHalfFovY = math.tan(fovY / 2)
     tanHalfFovX = math.tan(fovX / 2)
+    
     P = torch.zeros(4, 4)
-    P[0, 0] = -1 / tanHalfFovX
+    P[0, 0] = 1 / tanHalfFovX
     P[1, 1] = 1 / tanHalfFovY
-    P[3, 2] = -1.0
-    P[2, 2] = zfar / (zfar - znear)
-    P[2, 3] = -(zfar * znear) / (zfar - znear)
+    
+    # --- RIGHT-HANDED CORRECTIONS ---
+    P[3, 2] = -1.0                    # Changed from 1.0 to -1.0
+    P[2, 2] = zfar / (znear - zfar)    # Flipped denominator sign
+    P[2, 3] = (zfar * znear) / (znear - zfar) # Flipped denominator sign
     return P
+
+
+
+
+
 
    def _tensorinit(self):
        
@@ -142,13 +148,15 @@ def main():
         # top third: red
     gt_image[: height // 3, :, :] = torch.tensor([1.0, 0.0, 0.0])
         # middle third stays white (no need to set it, already white)
+    # 2. Middle third splits: (Checks LEFT vs RIGHT)
+# Middle-Left third: Blue
     gt_image[height // 3 : 2 * height // 3, : width // 2, :] = torch.tensor(
     [0.0, 0.0, 1.0]
-    )
+    )   
 # Middle-Right third: Yellow
     gt_image[height // 3 : 2 * height // 3, width // 2 :, :] = torch.tensor(
     [1.0, 1.0, 0.0]
-    )
+    )   
         # bottom third: green
     gt_image[2 * height // 3 :, :, :] = torch.tensor([0.0, 1.0, 0.0])
     print(f"the gt size is {gt_image.size}")
