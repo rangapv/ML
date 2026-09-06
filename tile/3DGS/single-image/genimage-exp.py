@@ -98,6 +98,11 @@ class SimpleTrainer:
         print(f'the transpose matrix is {y}')
         z = R @ y
         print(f'the quants and its transpose is {z}')
+
+        identity = torch.eye(3, device=z.device).expand_as(z)
+        is_identity = torch.allclose(z, identity, atol=1e-5)
+        print(f'the matrix roatation and it s transpose is {is_identity}')   # True or False
+
         det = torch.linalg.det(z if False else R)
         print(f'pritnign determinat')
         print(det.min(), det.max())
