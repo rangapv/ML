@@ -77,9 +77,30 @@ class SimpleTrainer:
         self.opacities.requires_grad = True
         self.viewmat.requires_grad = False
 
-
-
         print(f'the quaterion is {self.quats} its size is {self.quats.shape}')
+    
+    #def quat_to_rotmat(quats):
+        w, x, y, z = torch.unbind(torch.nn.functional.normalize(self.quats, dim=-1), dim=-1)
+        R = torch.stack(
+        [
+            1 - 2*(y**2 + z**2),  2*(x*y - w*z),        2*(x*z + w*y),
+            2*(x*y + w*z),        1 - 2*(x**2 + z**2),  2*(y*z - w*x),
+            2*(x*z - w*y),        2*(y*z + w*x),        1 - 2*(x**2 + y**2),
+        ],
+        dim=-1,
+        ).reshape(self.quats.shape[:-1] + (3, 3))
+
+       # R = quat_to_rotmat(self.quats)      # [100000, 3, 3]
+        m1 = torch.linalg.det(R)
+       #     m1 = torch.linalg.det(self.quats)
+        print(f'the deteminant of quats is {m1}')
+        y = R.mT
+        print(f'the transpose matrix is {y}')
+        z = R @ y
+        print(f'the quants and its transpose is {z}')
+        det = torch.linalg.det(z if False else R)
+        print(f'pritnign determinat')
+        print(det.min(), det.max())
 
     def train(
         self,
