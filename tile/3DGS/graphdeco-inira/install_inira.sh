@@ -4,17 +4,15 @@
 
 install_inira(){
 
-
 gi1=`pip3 uninstall torch torchvision torchaudio`
 gi2=`pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
 gi3=`pip3 install plyfile opencv-python`
 
 si1=`sudo apt install gcc-11 g++-11`
-si2=`sudo ln -sf /usr/bin/gcc /usr/bin/gcc-11`
+#si2=`sudo ln -sf /usr/bin/gcc-11 /usr/bin/gcc`
 si123=`sudo apt install unzip`
 
 si3=`export NVCC_FLAGS="-allow-unsupported-compiler"`
-
 
 gi4=`git clone https://github.com/graphdeco-inria/gaussian-splatting --recursive`
 
@@ -22,15 +20,23 @@ gi5=`cd gaussian-splatting;pip3 install ./submodules/diff-gaussian-rasterization
 
 gi6=`cd gaussian-splatting;pip3 install ./submodules/simple-knn --no-build-isolation`
 
-
 si4=`cd gaussian-splatting;wget https://huggingface.co/camenduru/gaussian-splatting/resolve/main/tandt_db.zip`
 
 si5=`cd gaussian-splatting;unzip tandt_db.zip`
 
 si5=`cd gaussian-splatting;python3 train.py -s ./tandt/train`
 
+}
+
+build_check(){
+
+
+
+
+
 
 }
+
 
 
 install_inira
