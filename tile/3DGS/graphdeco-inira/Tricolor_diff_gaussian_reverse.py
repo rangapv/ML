@@ -22,9 +22,9 @@ class Diffgaus:
     self.gt_image = gt_image.to(device=self.device)
     self.gt_image_reversed_chw= gt_image_reversed_chw.to(device=self.device)
     #print(f'the shape of target is {gt_image1.shape}')
-    self.width = 800
-    self.height = 600
-    self.num_gaussians = 100
+    self.width = 400
+    self.height = 300
+    self.num_gaussians = 2000
 # 2. Create dummy 3D Gaussian properties (Move to GPU)
     self.means3D = torch.zeros((100, 3), device="cuda")
     self.shs = torch.zeros((100, 16, 3), device="cuda")  # Spherical Harmonics colors
@@ -164,14 +164,14 @@ class Diffgaus:
         "training_progress.gif",
         save_all=True,
         append_images=frames[1:],
-        duration=150,   # ms per frame
+        duration=450,   # ms per frame
         loop=0,         # loop forever
        ) 
      print(f"Saved training_progress.gif from {len(frames)} frames")
 
 def main():
-    height = 600 
-    width = 800 
+    height = 300 
+    width = 400 
     gt_image = torch.ones((height,width,3)) * 1.0
     # make top left and bottom right red, blue
     # top third: red
