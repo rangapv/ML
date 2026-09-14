@@ -3,3 +3,6 @@ model*
 .*
 *_cache*
 error*
+*.xz
+*.json
+nvpro2*

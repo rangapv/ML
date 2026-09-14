@@ -31,7 +31,7 @@ vkins8=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;
 
 vkins9=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;cmake --build build -j 8`
 
-vkins10=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;./_bin/Releases/01_Foundation`
+vkins10=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;./_bin/01_Foundation`
 
 }
 
