@@ -4,11 +4,11 @@
 
 install_rt(){
 
-vkins1=`sudo apt-get install libtbb-dev`
-vkins11=`sudo apt install libx11-dev xserver-xorg-dev xorg-dev -y`
-vkins12=`sudo apt install xz-utils`
-vkins2=`sudo apt install libxcb-xinput0 libxcb-xinerama0 libxcb-cursor-dev`
-vkins3=`sudo apt-get install libglm-dev cmake libxcb-dri3-0 libxcb-present0      libpciaccess0 \
+vkins1=`sudo apt-get -y install libtbb-dev`
+vkins11=`sudo apt install -y  libx11-dev xserver-xorg-dev xorg-dev -y`
+vkins12=`sudo apt install -y xz-utils`
+vkins2=`sudo apt install -y libxcb-xinput0 libxcb-xinerama0 libxcb-cursor-dev`
+vkins3=`sudo apt-get -y install libglm-dev cmake libxcb-dri3-0 libxcb-present0      libpciaccess0 \
 libpng-dev libxcb-keysyms1-dev libxcb-dri3-dev libx11-dev g++ gcc \
 libwayland-dev libxrandr-dev libxcb-randr0-dev libxcb-ewmh-dev \
 git python-is-python3 bison libx11-xcb-dev liblz4-dev libzstd-dev \
@@ -19,9 +19,9 @@ vkins4=`wget https://sdk.lunarg.com/sdk/download/1.4.357.1/linux/vulkansdk-linux
 
 vkins5=`wget https://sdk.lunarg.com/sdk/download/1.4.357.1/linux/config.json`
 
-vkins41=`tar -xvf ./vulkansdk-linux-x86_64-1.4.357.1.tar.xz`
+vkins41=`tar -xvf ./vulkansdk-linux-x86_64-1.4.357.1.tar.xz -C ~/`
 
-vkins42=`cd 1.4.357.1/;source ~/1.4.357.1/setup-env.sh;vulkaninfo`
+vkins42=`cd ~/1.4.357.1/;source ~/1.4.357.1/setup-env.sh;vulkaninfo`
 
 vkins6=`mkdir nvpro2;cd nvpro2; git init; git clone https://github.com/nvpro-samples/nvpro_core2.git`
 
