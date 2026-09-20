@@ -5,7 +5,7 @@
 install_rt(){
 
 vkins1=`sudo apt-get -y install libtbb-dev`
-vkins11=`sudo apt install -y  libx11-dev xserver-xorg-dev xorg-dev -y`
+vkins11=`sudo apt install -y x11-apps libx11-dev xserver-xorg-dev xorg-dev -y`
 vkins12=`sudo apt install -y xz-utils`
 vkins2=`sudo apt install -y libxcb-xinput0 libxcb-xinerama0 libxcb-cursor-dev`
 vkins3=`sudo apt-get -y install libglm-dev cmake libxcb-dri3-0 libxcb-present0      libpciaccess0 \
