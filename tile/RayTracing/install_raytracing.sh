@@ -4,7 +4,7 @@
 
 install_rt(){
 
-vkins01=`sudo apt get update`
+vkins01=`sudo apt-get update`
 vkins1=`sudo apt-get -y install libtbb-dev`
 vkins11=`sudo apt install -y x11-apps libx11-dev xserver-xorg-dev xorg-dev`
 vkins12=`sudo apt install -y xz-utils`
@@ -34,7 +34,7 @@ vkins8=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;
 
 vkins9=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;cmake --build build -j 8`
 
-vkins10=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;./_bin/01_Foundation`
+vkins10=`cd nvpro2;cd vk_raytracing_tutorial_KHR;cd _bin;source ~/1.4.357.1/setup-env.sh;01_Foundation`
 
 }
 
