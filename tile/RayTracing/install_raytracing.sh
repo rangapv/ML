@@ -4,6 +4,7 @@
 
 install_rt(){
 
+vkins01=`sudo apt get update`
 vkins1=`sudo apt-get -y install libtbb-dev`
 vkins11=`sudo apt install -y x11-apps libx11-dev xserver-xorg-dev xorg-dev`
 vkins12=`sudo apt install -y xz-utils`
