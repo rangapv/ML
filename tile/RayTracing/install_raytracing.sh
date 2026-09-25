@@ -38,4 +38,20 @@ vkins10=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin;source ~/1.4.357.1/setup-env.
 
 }
 
+
+
+step1() {
+
+        vkstp1=`cd nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial ; cp -r 01_foundation 01_foundation_copy`
+       # vkstp2=`
+	file2="nvpro2/vk_raytracing_tutorial_KHR/CMakeLists.txt"
+        line21="add_subdirectory(raytrace_tutorial/01_foundation)"
+        line22="add_subdirectory(raytrace_tutorial/01_foundation);add_subdirectory(raytrace_tutorial/01_foundation_copy)"
+	repl12=`sudo sed -i "/^add_subdirectory(raytrace_tutorial\/01_foundation)$/a add_subdirectory(raytrace_tutorial/01_foundation_copy)" "$file2"`
+        vkstp4=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;cmake -B build -S .`
+        vkstp5=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/1.4.357.1/setup-env.sh;cmake --build build -j 8`
+
+}
+
+
 install_rt
