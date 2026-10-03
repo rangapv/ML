@@ -4,6 +4,7 @@ model*
 *_cache*
 error*
 *.xz
+*.xz.*
 *.json
 nvpro2*
 *.run
