@@ -2,8 +2,9 @@
 #author:rangapv@yahoo.com
 #14-09-2026
 
-install_rt(){
 
+vulk_depend() {
+echo "installing dependencies"
 vkins01=`sudo apt-get update`
 vkins1=`sudo apt-get -y install libtbb-dev`
 vkins11=`sudo apt install -y x11-apps libx11-dev xserver-xorg-dev xorg-dev`
@@ -18,6 +19,9 @@ git python-is-python3 bison libx11-xcb-dev liblz4-dev libzstd-dev \
 ocaml-core ninja-build pkg-config libxml2-dev wayland-protocols python3-jsonschema \
 clang-format qtbase5-dev qt6-base-dev qt6-wayland-dev`
 
+}
+
+install_rt(){
 
 vlkver="1.3.296.0"
 #vlkver="1.4.357.1"
@@ -72,6 +76,7 @@ vrm3=`rm -r ~/ml1/tile/RayTracing/vulkansdk-linux-x86_64-${vlkver}.tar*`
 
 }
 
+vulk_depend
 
 install_rt
 
