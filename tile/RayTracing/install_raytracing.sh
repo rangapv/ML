@@ -23,8 +23,8 @@ clang-format qtbase5-dev qt6-base-dev qt6-wayland-dev`
 
 install_rt(){
 
-vlkver="1.3.296.0"
-#vlkver="1.4.357.1"
+#vlkver="1.3.296.0"
+vlkver="1.4.357.1"
 
 vkins4=`wget https://sdk.lunarg.com/sdk/download/${vlkver}/linux/vulkansdk-linux-x86_64-${vlkver}.tar.xz`
 
