@@ -65,10 +65,10 @@ step3() {
 
 startover() {
 
-vrm1=`rm -rf ~/${vlkver}`
-vrm2=`rm -rf ~/ml1/tile/RayTracing/nvpro2`
-vrm21=`rm -rf ~/ml1/tile/RayTracing/config*`
-vrm3=`rm -rf ~/ml1/tile/RayTracing/vulkansdk-linux-x86_64-${vlkver}.tar*`
+vrm1=`rm -r ~/${vlkver}`
+vrm2=`rm -r ~/ml1/tile/RayTracing/nvpro2`
+vrm21=`rm -r ~/ml1/tile/RayTracing/config*`
+vrm3=`rm -r ~/ml1/tile/RayTracing/vulkansdk-linux-x86_64-${vlkver}.tar*`
 
 }
 
