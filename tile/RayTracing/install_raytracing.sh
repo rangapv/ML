@@ -30,7 +30,7 @@ vkins4=`wget https://sdk.lunarg.com/sdk/download/${vlkver}/linux/vulkansdk-linux
 
 vkins5=`wget https://sdk.lunarg.com/sdk/download/${vlkver}/linux/config.json`
 
-vkins41=`tar -xvf ./vulkansdk-linux-x86_64-.${vlkver}.tar.xz -C ~/`
+vkins41=`tar -xvf ./vulkansdk-linux-x86_64-${vlkver}.tar.xz -C ~/`
 
 vkins42=`cd ~/${vlkver}/;source ~/${vlkver}/setup-env.sh;vulkaninfo`
 
@@ -63,7 +63,7 @@ step3() {
 	vkstp31=`cp ./step3/01_foundation.cpp ./nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial/01_foundation_copy/`
         vkstp4=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/${vlkver}/setup-env.sh;cmake -B build -S .`
         vkstp5=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/${vlkver}/setup-env.sh;cmake --build build -j 8`
-	vkins10=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin;source ~/${vlkver}/setup-env.sh;./01_foundation_copy`
+	#vkins10=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin;source ~/${vlkver}/setup-env.sh;./01_foundation_copy`
 
 }
 
