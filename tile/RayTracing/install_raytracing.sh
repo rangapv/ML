@@ -2,8 +2,11 @@
 #author:rangapv@yahoo.com
 #14-09-2026
 
+#vlkver="1.3.296.0"
+vlkver="1.4.357.0"
 
 vulk_depend() {
+
 echo "installing dependencies"
 vkins01=`sudo apt-get update`
 vkins1=`sudo apt-get -y install libtbb-dev`
@@ -22,9 +25,6 @@ clang-format qtbase5-dev qt6-base-dev qt6-wayland-dev`
 }
 
 install_rt(){
-
-#vlkver="1.3.296.0"
-vlkver="1.4.357.1"
 
 vkins4=`wget https://sdk.lunarg.com/sdk/download/${vlkver}/linux/vulkansdk-linux-x86_64-${vlkver}.tar.xz`
 
@@ -46,8 +46,6 @@ vkins7=`cd nvpro2;git clone https://github.com/nvpro-samples/vk_raytracing_tutor
 
 }
 
-
-
 step0() {
 
         vkstp1=`cd nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial ; cp -r 01_foundation 01_foundation_copy`
@@ -58,6 +56,12 @@ step0() {
 	repl12=`sudo sed -i "/^add_subdirectory(raytrace_tutorial\/01_foundation)$/a add_subdirectory(raytrace_tutorial/01_foundation_copy)" "$file2"`
 }
 
+vulkinfo () {
+
+vlkinfo=`vulkaninfo --summary`
+echo "$vlkinfo"
+
+}
 
 step3() {
 	vkstp31=`cp ./step3/01_foundation.cpp ./nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial/01_foundation_copy/`
@@ -69,7 +73,7 @@ step3() {
 
 startover() {
 
-vrm1=`rm -r ~/1.4.357.1`
+vrm1=`rm -r ~/1.4.357.0`
 vrm2=`rm -r ~/ml1/tile/RayTracing/nvpro2`
 vrm21=`rm -r ~/ml1/tile/RayTracing/config*`
 vrm3=`rm -r ~/ml1/tile/RayTracing/vulkansdk-linux-x86_64-${vlkver}.tar*`
@@ -79,6 +83,8 @@ vrm3=`rm -r ~/ml1/tile/RayTracing/vulkansdk-linux-x86_64-${vlkver}.tar*`
 vulk_depend
 
 install_rt
+
+vulkinfo
 
 step0
 
