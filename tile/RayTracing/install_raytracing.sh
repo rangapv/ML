@@ -46,6 +46,13 @@ vkins7=`cd nvpro2;git clone https://github.com/nvpro-samples/vk_raytracing_tutor
 
 }
 
+vulkinfo () {
+
+vlkinfo=`vulkaninfo --summary`
+echo "$vlkinfo"
+
+}
+
 step0() {
 
         vkstp1=`cd nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial ; cp -r 01_foundation 01_foundation_copy`
@@ -54,13 +61,6 @@ step0() {
         line21="add_subdirectory(raytrace_tutorial/01_foundation)"
         line22="add_subdirectory(raytrace_tutorial/01_foundation);add_subdirectory(raytrace_tutorial/01_foundation_copy)"
 	repl12=`sudo sed -i "/^add_subdirectory(raytrace_tutorial\/01_foundation)$/a add_subdirectory(raytrace_tutorial/01_foundation_copy)" "$file2"`
-}
-
-vulkinfo () {
-
-vlkinfo=`vulkaninfo --summary`
-echo "$vlkinfo"
-
 }
 
 step3() {
