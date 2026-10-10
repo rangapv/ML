@@ -1025,7 +1025,7 @@ public:
     stages[eClosestHit].pName = "rchitMain";
     stages[eClosestHit].stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR; 
 
-    LOGI("Creating ray tracing pipeline structure (shaders will be added in Phase 5)\n");
+    //LOGI("Creating ray tracing pipeline structure (shaders will be added in Phase 5)\n");
 
     // Shader groups
     VkRayTracingShaderGroupCreateInfoKHR group{VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR};
@@ -1156,8 +1156,7 @@ public:
     m_callableRegion.stride        = 0;
     m_callableRegion.size          = 0;
 
-
-    LOGI("Shader binding table buffer created (will be populated in Phase 5)\n");
+    LOGI("Shader binding table created and populated \n");
   }
 
 private:
