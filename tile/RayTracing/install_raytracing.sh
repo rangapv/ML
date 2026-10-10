@@ -42,7 +42,7 @@ vkins7=`cd nvpro2;git clone https://github.com/nvpro-samples/vk_raytracing_tutor
 
 #vkins9=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/${vlkver}/setup-env.sh;cmake --build build -j 8`
 
-#vkins10=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin;source ~/${vlkver}/setup-env.sh;./01_foundation`
+#vkins10=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin/Release;source ~/${vlkver}/setup-env.sh;./01_foundation`
 
 }
 
@@ -67,7 +67,7 @@ step3() {
 	vkstp31=`cp ./step3/01_foundation.cpp ./nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial/01_foundation_copy/`
         vkstp4=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/${vlkver}/setup-env.sh;cmake -B build -S .`
         vkstp5=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/${vlkver}/setup-env.sh;cmake --build build -j 8`
-	#vkins10=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin;source ~/${vlkver}/setup-env.sh;./01_foundation_copy`
+	#vkins10=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin/Release;source ~/${vlkver}/setup-env.sh;./01_foundation_copy`
 
 }
 
@@ -76,7 +76,7 @@ startover() {
 vrm1=`rm -r ~/1.4.357.0`
 vrm2=`rm -r ~/ml1/tile/RayTracing/nvpro2`
 vrm21=`rm -r ~/ml1/tile/RayTracing/config*`
-vrm3=`rm -r ~/ml1/tile/RayTracing/vulkansdk-linux-x86_64-${vlkver}.tar*`
+vrm3=`rm -r ~/ml1/tile/RayTracing/vulkansdk-linux-x86_64-1.4.357.0.tar*`
 
 }
 
