@@ -75,7 +75,7 @@ step3() {
 step4() {
 
         vkstp41=`cp ./step4/01_foundation.cpp ./nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial/01_foundation_copy/`
-	vkstp42=`cp ./step4/shaderio.h ./nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial/01_foundation_copy/`
+	vkstp42=`cp ./step4/shaderio.h ./nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial/01_foundation_copy/shaders/`
         vkstp43=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/${vlkver}/setup-env.sh;cmake -B build -S .`
         vkstp44=`cd nvpro2;cd vk_raytracing_tutorial_KHR;source ~/${vlkver}/setup-env.sh;cmake --build build -j 8`
         #vkins45=`cd nvpro2/vk_raytracing_tutorial_KHR/_bin/Release;source ~/${vlkver}/setup-env.sh;./01_foundation_copy`
