@@ -362,11 +362,11 @@ public:
     postProcess(cmd);
 
     // Update the scene information buffer, this cannot be done in between dynamic rendering
-    updateSceneBuffer(cmd);
+    //updateSceneBuffer(cmd);
 
-    rasterScene(cmd);
+    //rasterScene(cmd);
 
-    postProcess(cmd);
+    //postProcess(cmd);
   }
 
   // Apply post-processing
