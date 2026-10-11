@@ -216,8 +216,24 @@ public:
     NVVK_CHECK(vkQueueWaitIdle(m_app->getQueue(0).queue));
 
     VkDevice device = m_app->getDevice();
-
+    
+    //step3:
+    //
+    // Cleanup acceleration structures
+    for(auto& blas : m_blasAccel)
+    {
+      m_allocator.destroyAcceleration(blas);
+    }
+    
+    m_allocator.destroyAcceleration(m_tlasAccel);
+    m_allocator.destroyBuffer(m_sbtBuffer);
+    //step4:
+    // Ray tracing components
+    vkDestroyPipelineLayout(device, m_rtPipelineLayout, nullptr);
+    vkDestroyPipeline(device, m_rtPipeline, nullptr);
+    m_rtDescPack.deinit();
     m_descPack.deinit();
+
     vkDestroyPipelineLayout(device, m_graphicPipelineLayout, nullptr);
     vkDestroyShaderEXT(device, m_vertexShader, nullptr);
     vkDestroyShaderEXT(device, m_fragmentShader, nullptr);
@@ -241,23 +257,6 @@ public:
     m_tonemapper.deinit();
     m_samplerPool.deinit();
     m_allocator.deinit();
-
-    //step3:
-    //
-    // Cleanup acceleration structures
-    for(auto& blas : m_blasAccel)
-    {
-      m_allocator.destroyAcceleration(blas);
-    }
-    m_allocator.destroyAcceleration(m_tlasAccel);
-
-    m_allocator.deinit();
-    //step4:
-    // Ray tracing components
-    vkDestroyPipelineLayout(device, m_rtPipelineLayout, nullptr);
-    vkDestroyPipeline(device, m_rtPipeline, nullptr);
-    m_rtDescPack.deinit();
-    m_allocator.destroyBuffer(m_sbtBuffer);
     
   }
 
@@ -359,14 +358,14 @@ public:
         rasterScene(cmd);
     }
 
-    postProcess(cmd);
+   //postProcess(cmd);
 
     // Update the scene information buffer, this cannot be done in between dynamic rendering
     //updateSceneBuffer(cmd);
 
-    //rasterScene(cmd);
+   //rasterScene(cmd);
 
-    //postProcess(cmd);
+    postProcess(cmd);
   }
 
   // Apply post-processing
@@ -937,7 +936,7 @@ public:
         VkAccelerationStructureInstanceKHR asInstance{};
         asInstance.transform                      = toTransformMatrixKHR(instance.transform);  // Position of the instance
         asInstance.instanceCustomIndex            = instance.meshIndex;                       // gl_InstanceCustomIndexEXT
-        // asInstance.accelerationStructureReference = m_blasAccel[instance.meshIndex].address;  // Will be set in Phase 3
+        asInstance.accelerationStructureReference = m_blasAccel[instance.meshIndex].address;  // Will be set in Phase 3
         asInstance.instanceShaderBindingTableRecordOffset = 0;  // We will use the same hit group for all objects
         asInstance.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV;  // No culling - double sided
         asInstance.mask  = 0xFF;
