@@ -8,3 +8,5 @@ error*
 *.json
 nvpro2*
 *.run
+VulkanTest*
+NVIDIA-Nsight-Graphics*
