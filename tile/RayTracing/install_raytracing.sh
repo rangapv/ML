@@ -15,7 +15,7 @@ vkins12=`sudo apt install -y xz-utils`
 vkins13=`sudo apt install -y libxinerama-dev libxi-dev`
 vkins14=`sudo apt install -y libxcursor-dev` 
 vkins2=`sudo apt install -y libxcb-xinput0 libxcb-xinerama0 libxcb-cursor-dev`
-vkins3=`sudo apt-get -y install libglm-dev cmake libxcb-dri3-0 libxcb-present0      libpciaccess0 \
+vkins3=`sudo apt-get -y install libglm-dev libglfw3-dev cmake libxcb-dri3-0 libxcb-present0      libpciaccess0 \
 libpng-dev libxcb-keysyms1-dev libxcb-dri3-dev libx11-dev g++ gcc \
 libwayland-dev libxrandr-dev libxcb-randr0-dev libxcb-ewmh-dev \
 git python-is-python3 bison libx11-xcb-dev liblz4-dev libzstd-dev \
