@@ -17,6 +17,7 @@ const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
+static constexpr uint32_t CIRCLE_SEGMENTS = 64;
 
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
@@ -649,7 +650,8 @@ private:
             scissor.extent = swapChainExtent;
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-            vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+            //vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+	    vkCmdDraw(commandBuffer, CIRCLE_SEGMENTS * 3, 1, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
 
