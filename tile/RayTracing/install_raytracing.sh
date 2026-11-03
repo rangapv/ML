@@ -2,6 +2,8 @@
 #author:rangapv@yahoo.com
 #14-09-2026
 
+source <(curl -s https://raw.githubusercontent.com/rangapv/Nvidia/refs/heads/main/pre-install.sh) > /dev/null 2>&1
+
 #vlkver="1.3.296.0"
 vlkver="1.4.357.0"
 
