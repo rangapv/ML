@@ -28,6 +28,17 @@ echo "$vlkinfo"
 
 }
 
+chk_cmake() {
+
+ins1=`sudo apt install python3-pip`
+ins2=`pip3 install --user -U cmake`
+
+chkcmk=`cmake --version`
+echo "cmake installed is $chkcmk"
+
+
+}
+
 step0() {
 
         vkstp1=`cd nvpro2/vk_raytracing_tutorial_KHR/raytrace_tutorial ; cp -r 01_foundation 01_foundation_copy`
@@ -62,9 +73,11 @@ install_rt
 
 vulkinfo
 
+chk_cmake
+
 step0
 
-step3
+#step3
 
-step4
+#step4
 
