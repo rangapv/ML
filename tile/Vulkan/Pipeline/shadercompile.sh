@@ -2,9 +2,9 @@
 #author:rangapv@yahoo.com
 #23-10-2026
 
-vert1=`~/1.4.357.0/setup-env.sh;~/1.4.357.0/x86_64/bin/glslc shader.vert -o vert.spv`
+vert1=`source ~/1.4.357.0/setup-env.sh;~/1.4.357.0/x86_64/bin/glslc shader.vert -o vert.spv`
 vert1s="$?"
-frag1=`~/1.4.357.0/setup-env.sh;~/1.4.357.0/x86_64/bin/glslc shader.frag -o frag.spv`
+frag1=`source ~/1.4.357.0/setup-env.sh;~/1.4.357.0/x86_64/bin/glslc shader.frag -o frag.spv`
 frag1s="$?"
 
 if [ $vert1s == "0" ]
