@@ -32,14 +32,22 @@ vkins5=`wget https://sdk.lunarg.com/sdk/download/${vlkver}/linux/config.json`
 
 vkins41=`tar -xvf ./vulkansdk-linux-x86_64-${vlkver}.tar.xz -C ~/`
 
-vkins42=`cd ~/${vlkver}/;source ~/${vlkver}/setup-env.sh;vulkaninfo`
+vkins42=`cd ~/${vlkver}/;source ~/${vlkver}/setup-env.sh;vulkaninfo --summary`
 
 }
 
 vulkinfo () {
 
-vlkinfo=`vulkaninfo --summary`
+vlkinfo=`source ~/${vlkver}/setup-env.sh;vulkaninfo --summary`
 echo "$vlkinfo"
+
+}
+
+
+vulkantest () {
+
+echo "If Vulkan SDK has been successfully installed then you will see a pop-up window with the LunarG cube swivelling"
+`source ~/1.4.357.0/setup-env.sh;~/1.4.357.0/x86_64/bin/vkcubepp`
 
 }
 
@@ -55,5 +63,7 @@ vulk_depend
 install_vkAPI
 
 vulkinfo
+
+vulkantest
 
 #startover
