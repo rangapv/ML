@@ -25,7 +25,7 @@ vkins7=`cd nvpro2;git clone https://github.com/nvpro-samples/vk_raytracing_tutor
 
 vulkinfo () {
 
-vlkinfo=`vulkaninfo --summary`
+vlkinfo=`source ~/${vlkver}/setup-env.sh;vulkaninfo --summary`
 echo "$vlkinfo"
 
 }
@@ -79,7 +79,10 @@ chk_cmake
 
 step0
 
-#step3
+step3
 
 #step4
+
+
+echo "If it compiles fine but there is segmentation core dump, just reboot the system and run the Binary file under Release in _bin directory of vk_tutorial"
 
