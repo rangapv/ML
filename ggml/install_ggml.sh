@@ -4,12 +4,10 @@
 
 insta_dep() {
 
-dep1=`apt update` 
-dep2=`apt install -y build-essential cmake git pkg-config`
+dep1=`sudo apt update` 
+dep2=`sudo apt install -y build-essential cmake git pkg-config`
 
 }
-
-
 
 insta_ggml() {
 insggm1=`git clone https://github.com/ggml-org/ggml`
@@ -17,8 +15,6 @@ insggm2=`cd ggml;mkdir build && cd build;cmake ..;cmake --build . --config Relea
 insggm3=``
 
 }
-
-
 
 complie-sample() {
 samp1=`cd /ggml/build ;cmake --build . --target simple-backend -j2`
