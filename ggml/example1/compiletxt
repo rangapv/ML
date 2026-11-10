@@ -1,0 +1,3 @@
+cmake -S . -B build -DGGML_DIR=/home/ubuntu/ggml 
+cmake --build build 
+./build/ggml_tensors
