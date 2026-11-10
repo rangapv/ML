@@ -5,7 +5,7 @@
 insta_dep() {
 
 dep1=`sudo apt update` 
-dep2=`sudo apt install -y build-essential cmake git pkg-config`
+dep2=`sudo apt install -y build-essential graphviz cmake git pkg-config`
 
 }
 
