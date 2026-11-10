@@ -55,6 +55,9 @@ int main(void) {
         for (int c = 0; c < 3; c++) printf("%8.1f", out[r * 3 + c]);
         printf("\n");
     }
+    
+    ggml_graph_print(gf);
+    ggml_graph_dump_dot(gf, NULL, "./debug.dot");
 
     ggml_free(ctx);
     return 0;
