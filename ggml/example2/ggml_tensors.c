@@ -70,15 +70,16 @@ int main(void) {
     const float *out = (const float *)C->data;
     int k;
     printf("C (2 rows x 3 cols):\n");
-    for (k = 0; k < 2; k++);{
-        printf("slice %d:\n",out[k]);
+    for (k = 0; k < 2; k++){
+        printf("slice %d:\n",k);
         for (int r = 0; r < 2; r++) {
-            for (int c = 0; c < 3; c++) printf("%8.1f", out[k*6 + r*3 + c]);{
-                printf("\n");
+            for (int c = 0; c < 3; c++) {
+		    printf("%8.1f", out[k*6 + r*3 + c]);
+	       }
+            printf("\n");
 	    }
 	    printf("\n");
 	}
-    }
     
     ggml_graph_print(gf);
     ggml_graph_dump_dot(gf, NULL, "./debug.dot");
