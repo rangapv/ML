@@ -20,13 +20,13 @@ vulver="1.4.357.0"
 insggmla1=`sudo apt update`
 insggmla2=`sudo apt install -y build-essential cmake git libopenblas-dev pkg-config`
 insggmla3=`git clone https://github.com/ggml-org/ggml`
-insggmla4=`source ~/${vulver}/setup-env.sh;cd ggml;mkdir build;cmake -S . -B build \
+insggmla4=`source ~/${vulver}/setup-env.sh;cd ggml;cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
   -DGGML_CUDA=ON \
   -DGGML_VULKAN=ON \
   -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS \
   -DGGML_BUILD_EXAMPLES=ON`
-insggmla5=`cmake --build ./ggml/build --config Release -j2`
+insggmla5=`source ~/${vulver}/setup-env.sh;cd ./ggml;cmake --build ./build --config Release -j2`
 }
 
 complie-sample() {
