@@ -58,7 +58,7 @@ vrm3=`rm -r ~/ml1/tile/Vulkan/vulkansdk-linux-x86_64-1.4.357.0.tar*`
 
 }
 
-vulk_depend
+#vulk_depend
 
 install_vkAPI
 
