@@ -1,0 +1,2 @@
+cmake -B build -DCMAKE_PREFIX_PATH=$HOME/ggml-install
+cmake --build build -j
