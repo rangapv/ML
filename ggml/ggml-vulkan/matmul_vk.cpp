@@ -114,6 +114,9 @@ int main(int argc, char ** argv) {
     printf("Checked %d outputs: max abs error = %.3e, RMS(ref) = %.3f, relative = %.3e (tol %.0e) -> %sP0+r\P0+r\P0+r\P0+r\P0+r\\n",
            checked, max_err, rms, rel, tol, ok ? "PASS" : "FAIL");
 
+    ggml_graph_print(gf);
+    ggml_graph_dump_dot(gf, NULL, "./debug.dot");
+
     ggml_backend_buffer_free(buf);
     ggml_free(ctx);
     ggml_backend_free(backend);
