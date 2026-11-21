@@ -1,0 +1,3 @@
+cmake -B build -DGGML-DIR=$HOME/ml/ggml/ggml -DCMAKE_BUILD_TYPE=Release -DVulkan_LIBRARY=$VULKAN_SDK/lib/VulkanLoader/lib/libvulkan.so   -DVulkan_INCLUDE_DIR=$VULKAN_SDK/include   -DVulkan_GLSLC_EXECUTABLE=$VULKAN_SDK/bin/glslc
+cmake --build build -j2
+~/ml/ggml/ggml-vulkan/build$ ./matmul_vk
