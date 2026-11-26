@@ -23,6 +23,8 @@ system_ins() {
 
 si1=`sudo apt install unzip`
 
+si11=`sudo apt install -y g++ build-essential ninja-build`
+
 si2=`pip3 uninstall -y tensorflow keras tf-keras tensorflow-io-gcs-filesystem`
 
 si3=`mkdir ~/sample1;cd ~/sample1;git init;git pull https://github.com/nerfstudio-project/gsplat.git;git submodule update --init --recursive`
