@@ -10,14 +10,31 @@ wi2=`pip3 install --user --upgrade packaging setuptools`
 
 wi3=`pip3 install tyro`
 
-wi4=`wget https://s3.us-east-2.amazonaws.com/gsplat-1.5.3/gsplat-1.5.3-cp310-cp310-linux_x86_64.whl`
+wi4=`pip3 install -r ./requirements1.txt`
 
+if [[ ! -f "./gsplat-1.5.3-cp310-cp310-linux_x86_64.whl" ]]
+then
+     wi4=`wget https://s3.us-east-2.amazonaws.com/gsplat-1.5.3/gsplat-1.5.3-cp310-cp310-linux_x86_64.whl`
+fi
+
+tsgsv=`pip3 show gsplat | grep "^Version" | awk '{split($0,a,":"); sub(/^[ \t]+/, "", a[2]); print a[2]}'`
+
+if [[ "$tsgsv" != "1.5.3" ]] 
+then
 wi5=`pip3 install ./gsplat-1.5.3-cp310-cp310-linux_x86_64.whl`
+else 
+	echo "gsplat verison is $tsgsv"
+fi
 
+nerv=`pip3 show nerfview | grep "^Version" | awk '{split($0,a,":"); sub(/^[ \t]+/, "", a[2]); print a[2]}'`
+
+if [[ -z "$nerv" ]]
+then
 wi5=`pip3 install nerfview`
-
+else
+	echo "nerfview verison is $nerv"
+fi
 }
-
 
 system_ins() {
 
@@ -27,9 +44,16 @@ si11=`sudo apt install -y g++ build-essential ninja-build`
 
 si2=`pip3 uninstall -y tensorflow keras tf-keras tensorflow-io-gcs-filesystem`
 
+if [[ -d "~/sample1" ]]
+then
 si3=`mkdir ~/sample1;cd ~/sample1;git init;git pull https://github.com/nerfstudio-project/gsplat.git;git submodule update --init --recursive`
+fi
+
+}
 
 #TEST:
+
+gsplat_test () {
 
 si4=`cd ~/sample1;python3 -c "import gsplat; print(gsplat.__file__); from gsplat import color_correct; print('ok')"`
 si4s="$?"
@@ -49,3 +73,5 @@ fi
 wheel_install
 
 system_ins
+
+#gsplat_test
